@@ -1,17 +1,26 @@
-var io = require('socket.io').listen(8080),
-	proc = require('child_process'),
-	plugins = require('./plugins'),
-	server = null,
-	mc_server = null;
+var io = require('socket.io')(),
+ 	proc = require('child_process'),
+	plugins = [];
 
 require('fs').readdirSync(__dirname + '/plugins').forEach(function(file) {
   if (file.match(/\.js$/) !== null && file !== 'main.js') {
     var name = file.replace('.js', '');
+		plugins.push(name);
 	}
 })
 
+console.log("Plugins loaded: "+plugins.join(", "));
 
-io.sockets.on('connection', function(socket) {
+var	server = null,
+	mc_server = null;
+
+function p_callback(error, stdout, stderr) {
+	io.sockets.emit('console', ""+stdout);
+	io.sockets.emit('console', ""+stderr);
+	//io.sockets.emit('status', null);
+}
+
+io.on('connection', function(socket) {
 
 	socket.on('get_server_list', function(){
 		socket.emit('server_list', plugins);
@@ -34,34 +43,31 @@ io.sockets.on('connection', function(socket) {
 		// Set which server is currently running
 		server = name;
 
-		// Start the Minecraft Server
-		mc_server = proc.spawn(
-			// Uses Java to run the server from a command line child process. The command prompt will not be visible.
-			"java",
-			['-Xms1024M', '-Xmx1024M', '-jar', 'minecraft_server.jar', 'nogui'],
-			// CWD should contain the folder that contains all of your plugins. The _ is just there because I prefix all of my server folders with _
-			// Also not the \ to escape spaces. This is necessary (at least on Windows)
-			{ cwd: "/home/thezero/minecraft/server/" + plugins[server] }
-		);
+		require('./plugins/'+plugins[name]+'.js')(p_callback,function(proc,type){
+      if(type=="spawn"){
+				proc.stdout.on('data', function (data) {
+					if (data) {
+						io.sockets.emit('console', ""+data);
+					}
+				});
+
+				proc.stderr.on('data', function (data) {
+					if (data) {
+						io.sockets.emit('console', ""+data);
+					}
+				});
+
+				proc.on('exit', function () {
+					proc = server = null;
+					io.sockets.emit('status', null);
+				});
+      }
+      if(type=="exec"){
+        //proc();
+      }
+    });
 
 		io.sockets.emit('status', server);
-
-		mc_server.stdout.on('data', function (data) {
-			if (data) {
-				io.sockets.emit('console', ""+data);
-			}
-		});
-
-		mc_server.stderr.on('data', function (data) {
-			if (data) {
-				io.sockets.emit('console', ""+data);
-			}
-		});
-
-		mc_server.on('exit', function () {
-			mc_server = server = null;
-			io.sockets.emit('status', null);
-		});
 
 	}); // End .on('start_server')
 
@@ -83,3 +89,6 @@ process.stdin.on('data', function (data) {
 		mc_server.stdin.write(data);
 	}
 });
+
+io.listen(13370);
+console.log("Penmode3 [socket.io] listening on port 13370");
