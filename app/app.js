@@ -1,6 +1,11 @@
-var io = require('socket.io')(),
- 	proc = require('child_process'),
-	plugins = [];
+var express = require('express')
+var app = express();
+var server = require('http').createServer(app);
+var io = require('socket.io')(server);
+var proc = require('child_process');
+var plugins = [],
+	proc_n = null,
+	proc = null;
 
 require('fs').readdirSync(__dirname + '/plugins').forEach(function(file) {
   if (file.match(/\.js$/) !== null && file !== 'main.js') {
@@ -8,11 +13,7 @@ require('fs').readdirSync(__dirname + '/plugins').forEach(function(file) {
 		plugins.push(name);
 	}
 })
-
 console.log("Plugins loaded: "+plugins.join(", "));
-
-var	server = null,
-	mc_server = null;
 
 function p_callback(error, stdout, stderr) {
 	io.sockets.emit('console', ""+stdout);
@@ -27,13 +28,13 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('get_status', function(){
-		socket.emit('status', server);
+		socket.emit('status', proc_n);
 	});
 
 	// When the client says to start a server...
 	socket.on('start_server', function(name) {
 		// If a server is already running or server doesn't exist
-		if (mc_server || !plugins[name]) {
+		if (proc || !plugins[name]) {
 			// Let the user know that it failed.
 			socket.emit('fail', 'start_server');
 			// Stop execution of this callback
@@ -41,7 +42,7 @@ io.on('connection', function(socket) {
 		}
 
 		// Set which server is currently running
-		server = name;
+		proc_n = name;
 
 		require('./plugins/'+plugins[name]+'.js')(p_callback,function(proc,type){
       if(type=="spawn"){
@@ -58,23 +59,20 @@ io.on('connection', function(socket) {
 				});
 
 				proc.on('exit', function () {
-					proc = server = null;
+					proc = proc_n = null;
 					io.sockets.emit('status', null);
 				});
       }
-      if(type=="exec"){
-        //proc();
-      }
     });
 
-		io.sockets.emit('status', server);
+		io.sockets.emit('status', proc_n);
 
 	}); // End .on('start_server')
 
 	socket.on('command', function(cmd) {
-		if (mc_server) {
+		if (proc) {
 			io.sockets.emit('console', "Player Command: " + cmd);
-			mc_server.stdin.write(cmd + "\r");
+			proc.stdin.write(cmd + "\r");
 		} else {
 			socket.emit('fail', cmd);
 		}
@@ -82,13 +80,17 @@ io.on('connection', function(socket) {
 });
 
 
-// Allows me to type commands into the Console Window to control the MC Server
+// Allows me to type commands into the Console Window
 process.stdin.resume();
 process.stdin.on('data', function (data) {
-	if (mc_server) {
-		mc_server.stdin.write(data);
+	if (proc) {
+		proc.stdin.write(data);
 	}
 });
 
-io.listen(13370);
-console.log("Penmode3 [socket.io] listening on port 13370");
+// ExpressStatic file server
+// TODO: NodeJS CWD
+app.use(express.static('../www'));
+// Server + Socket.io
+server.listen(13370);
+console.log("Penmode3 [express+socket.io] listening on port 13370");

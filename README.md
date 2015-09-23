@@ -13,13 +13,9 @@ TheZero, ex-PH#0S Team Member
 
 ## Installation
 
- *  Copy the ```www``` folder content in a web server folder (every HTTP server is good, but with PHP is better)
-
-1. Visit the web server folder.
-2. Click the button to start Penmode3 Backend
-
-or
-
-1. Go in ```/app``` folder
-2. Open a terminal and execute ```node app```
-3. Visit the web server page
+```shell
+cd /opt
+git clone https://github.com/TheZ3ro/penmode3
+sudo chmod +x /opt/penmode3/app/penmode3
+ln -s /opt/penmode3/app/penmode3 /usr/bin/
+```

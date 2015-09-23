@@ -2,6 +2,7 @@
   "name": "Penmode3_Starter",
   "version": "0.1.0",
   "dependencies": {
-    "socket.io": "~0.9.8"
+    "socket.io": "~1.3.7",
+    "express": "~4.13.3"
   }
 }

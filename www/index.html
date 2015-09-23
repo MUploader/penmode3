@@ -20,18 +20,21 @@
 
         <script type="text/javascript" src="js/jquery.js"></script>
         <script type="text/javascript" src="js/bootstrap.js"></script>
+        <script type="text/javascript" src="js/mustache.js"></script>
         <script type="text/javascript" src="http://localhost:13370/socket.io/socket.io.js"></script>
         <script>
           function init(){
-            if(typeof io === 'undefined'){
-              console.log("...");
-              return false;
-            } else {
+            if(typeof io !== 'undefined'){
+              // TODO: Start Socket.io
               console.log("I'm ready!!!!!");
-              return true;
             }
           }
 
+          /*$.get('template/no-home.mst', function(template) {
+            var rendered = Mustache.render(template, {});
+            $('#content').html(rendered);
+          });*/
+          
           init();
         </script>
     </body>
