@@ -1,3 +1,4 @@
 #!/bin/sh
-
-node /opt/penmode3/app/app
+ARGV="$@"
+DIR=`dirname $0`
+node $DIR/app $ARGV

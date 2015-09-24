@@ -16,6 +16,8 @@ TheZero, ex-PH#0S Team Member
 ```shell
 cd /opt
 git clone https://github.com/TheZ3ro/penmode3
+cd penmode3/app
+npm install
 sudo chmod +x /opt/penmode3/app/penmode3
 ln -s /opt/penmode3/app/penmode3 /usr/bin/
 ```
