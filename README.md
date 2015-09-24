@@ -21,3 +21,6 @@ npm install
 sudo chmod +x /opt/penmode3/app/penmode3
 ln -s /opt/penmode3/app/penmode3 /usr/bin/
 ```
+
+## Communication Protocol
+Read the [wiki page](https://github.com/TheZ3ro/penmode3/wiki/Communication-Protocol)

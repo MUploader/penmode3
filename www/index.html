@@ -19,23 +19,42 @@
         </div>
 
         <script type="text/javascript" src="js/jquery.js"></script>
-        <script type="text/javascript" src="js/bootstrap.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
         <script type="text/javascript" src="js/mustache.js"></script>
         <script type="text/javascript" src="http://localhost:13370/socket.io/socket.io.js"></script>
+        <!-- required for jwt -->
+        <script type="text/javascript" src="js/sha.js"></script>
+        <script type="text/javascript" src="js/base64.js"></script>
+        <script type="text/javascript" src="js/base64x.js"></script>
+        <!-- /required -->
+        <script type="text/javascript" src="js/jwt.js"></script>
         <script>
-          function init(){
-            if(typeof io !== 'undefined'){
-              // TODO: Start Socket.io
-              console.log("I'm ready!!!!!");
-            }
+          if(typeof io !== 'undefined'){
+            var socket = io("http://localhost:13370");
+            socket.on('login_required', function(){
+              $.get('template/login.html', function(c) {
+                $('#content').html(c);
+              });
+            });
+            socket.on('authenticated', function(){
+              $.get('template/home.mst', function(template) {
+                var rendered = Mustache.render(template, {});
+                $('#content').html(rendered);
+              });
+            });
+            socket.on('disconnect', function(){});
+          }
+
+          function login(){
+            var token = new JWT().sign({"user":$("#inputUser").val()},$("#inputPassword").val());
+            socket.emit('login', token);
           }
 
           /*$.get('template/no-home.mst', function(template) {
             var rendered = Mustache.render(template, {});
             $('#content').html(rendered);
           });*/
-          
-          init();
+
         </script>
     </body>
 </html>

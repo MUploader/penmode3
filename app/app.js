@@ -35,7 +35,7 @@ var plugins = [],
 	proc_n = null,
 	proc = null;
 
-var gen_hash = require('./gen_hash.js');
+var jwt = require('./jwt.js');
 var login = require('./login.json').login;
 var auth = [];
 
@@ -64,15 +64,17 @@ io.on('connection', function(socket) {
 		//io.sockets.emit('status', null);
 	}
 
-	socket.emit('login_required',true);
-	console.log(login);
-	console.log(gen_hash(login[0]));
+	socket.emit('login_required');
 
 	socket.on('login', function(hash){
 		for(var i=0;i<login.length;i++){
-			if(hash==gen_hash(login[i])){
-				auth.push(socket.id);
-			}
+			jwt.verify(hash, login[i].pass, function(err, decoded) {
+				if(decoded.user===login[i].user){
+					console.log(socket.id);
+					auth.push(socket.id);
+					socket.emit('authenticated');
+				}
+			});
 		}
 	});
 
