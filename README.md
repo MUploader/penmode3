@@ -25,3 +25,6 @@ ln -s /opt/penmode3/app/penmode3 /usr/bin/
 ## Hacking/Improving penmode3
 If you are interested in Improving penmode3, or you only want to have
 some more information on how it works, read the [wiki](https://github.com/TheZ3ro/penmode3/wiki/)
+
+**Send some Issue and/or Pull Request!**
+Read the wiki page on [Contribute](https://github.com/TheZ3ro/penmode3/wiki/Contribute)
