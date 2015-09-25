@@ -28,3 +28,6 @@ some more information on how it works, read the [wiki](https://github.com/TheZ3r
 
 **Send some Issue and/or Pull Request!**
 Read the wiki page on [Contribute](https://github.com/TheZ3ro/penmode3/wiki/Contribute)
+
+### Note
+I'm a *Pirate* and *Anacleto* is my personal parrot.
