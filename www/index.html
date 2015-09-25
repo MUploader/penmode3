@@ -7,6 +7,7 @@
         <meta name="description" content="A Node Application built with Web Sockets for pentesting via a web interface.">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/bootstrap.css">
+        <link rel="stylesheet" href="css/main.css">
     </head>
     <body>
         <div class="container">
@@ -34,20 +35,28 @@
             socket.on('login_required', function(){
               $.get('template/login.html', function(c) {
                 $('#content').html(c);
+                $('#login').click(function(){
+                  var token = new JWT().sign({"user":$("#inputUser").val()},$("#inputPassword").val());
+                  socket.emit('login', token);
+                })
               });
             });
             socket.on('authenticated', function(){
-              $.get('template/home.mst', function(template) {
-                var rendered = Mustache.render(template, {});
-                $('#content').html(rendered);
+              $.get('template/home.html', function(c) {
+                $('#content').html(c);
               });
+              socket.emit('get_command_list');
             });
+            socket.on('command_list',function(arr){
+              $.get('template/command_item.mst', function(template) {
+                var rendered = Mustache.render(template, {'commands':arr});
+                $('.command-list').html(rendered);
+                $('a.command').click(function() {
+                  alert($(this).data('command'));
+                });
+              });
+            })
             socket.on('disconnect', function(){});
-          }
-
-          function login(){
-            var token = new JWT().sign({"user":$("#inputUser").val()},$("#inputPassword").val());
-            socket.emit('login', token);
           }
 
           /*$.get('template/no-home.mst', function(template) {
