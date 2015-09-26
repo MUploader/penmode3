@@ -30,6 +30,7 @@ if(!argv.noServe){
 	var io = require('socket.io')();
 }
 
+var request = require('request');
 var proc = require('child_process');
 var plugins = [],
 	proc_n = null,
@@ -56,12 +57,50 @@ require('fs').readdirSync(argv.plugins || PLUGINPATH).forEach(function(file) {
 })
 console.log("Plugins loaded: "+plugins.join(", "));
 
+function getTor(cb) {
+  request.get({
+    url: 'https://check.torproject.org/',
+  }, function(err, resp, body) {
+    if(!err) {
+      if(resp.statusCode === 200) {
+				if(body.indexOf("tor-off.png") > -1) {
+					return cb(false);
+				}else if (body.indexOf("tor-on.png") > -1) {
+					return cb(true);
+				}else{
+					return cb(undefined);
+				}
+      }
+    }
+  });
+}
+
+function getIP(cb) {
+  request.get({
+    url: 'http://ipinfo.io/ip',
+		json: true
+  }, function(err, resp, body) {
+    if(!err) {
+      if(resp.statusCode === 200) {
+        return cb(body);
+      }
+    }
+  });
+}
+
 // Socket.io connection
 io.on('connection', function(socket) {
 	var p_callback = function(error, stdout, stderr) {
 		socket.emit('console', ""+stdout);
 		socket.emit('console', ""+stderr);
 		//io.sockets.emit('status', null);
+	}
+
+	var check_auth = function(socket_id){
+		if(auth.indexOf(socket_id) > -1){
+			return true;
+		}
+		return false;
 	}
 
 	socket.emit('login_required');
@@ -79,11 +118,25 @@ io.on('connection', function(socket) {
 	});
 
 	socket.on('get_command_list', function(){
+		if(!check_auth(socket.id)) { socket.emit('login_required'); return; }
 		socket.emit('command_list', plugins);
+	});
+
+	socket.on('ip_status', function(){
+		if(!check_auth(socket.id)) { socket.emit('login_required'); return; }
+		var ip_status = {};
+		getIP(function(e_ip){
+			ip_status.ip = e_ip.replace(/\n/g,'');
+			getTor(function(tor_status){
+				ip_status.tor = tor_status;
+				socket.emit('ip_status', ip_status);
+			});
+		});
 	});
 
 	// When the client says to start a server...
 	socket.on('start_command', function(name) {
+		if(!check_auth(socket.id)) { socket.emit('login_required'); return; }
 		// If a server is already running or server doesn't exist
 		if (proc || !plugins[name]) {
 			// Let the user know that it failed.
@@ -121,6 +174,7 @@ io.on('connection', function(socket) {
 	}); // End .on('start_server')
 
 	socket.on('command', function(cmd) {
+		if(!check_auth(socket.id)) { socket.emit('login_required'); return; }
 		if (proc) {
 			io.sockets.emit('console', "Player Command: " + cmd);
 			proc.stdin.write(cmd + "\r");
