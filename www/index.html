@@ -26,7 +26,7 @@
               <ul class="nav navbar-nav">
                 <li class="active"><a href="#">Home</a></li>
                 <li><a href="#about">About</a></li>
-                <li><a href="#contact">Contact</a></li>
+                <li><a href="https://github.com/TheZ3ro/penmode3" target="_blank">Source Code</a></li>
               </ul>
             </div><!--/.nav-collapse -->
           </div>
@@ -35,7 +35,8 @@
         <div class="container page">
             <div class="row">
                 <div class="span8 offset2">
-                    <section id="content" class="row-fluid"></section>
+                    <section id="main-content" class="row-fluid"></section>
+                    <section id="extra-content" class="row-fluid"></section>
                 </div>
             </div>
         </div>
@@ -61,7 +62,7 @@
             var socket = io("http://localhost:13370");
             socket.on('login_required', function(){
               $.get('template/login.html', function(c) {
-                $('#content').html(c);
+                $('#main-content').html(c);
                 $('#login').click(function(){
                   var token = new JWT().sign({"user":$("#inputUser").val()},$("#inputPassword").val());
                   socket.emit('login', token);
@@ -70,7 +71,7 @@
             });
             socket.on('authenticated', function(){
               $.get('template/home.html', function(c) {
-                $('#content').html(c);
+                $('#main-content').html(c);
               });
               socket.emit('get_command_list');
               socket.emit('ip_status');
@@ -90,6 +91,21 @@
             });
             socket.on('disconnect', function(){});
           }
+
+          $(window).on('hashchange', function() {
+            if(location.hash==""){
+              $('#extra-content').hide();
+              $('#main-content').show();
+              $('#extra-content').html('');
+            }else{
+              var hash = location.hash.replace(/\#/g,'');
+              $.get('template/'+hash+'.html', function(c) {
+                $('#extra-content').html(c);
+                $('#main-content').hide();
+                $('#extra-content').show();
+              });
+            }
+          });
 
           /*$.get('template/no-home.mst', function(template) {
             var rendered = Mustache.render(template, {});
