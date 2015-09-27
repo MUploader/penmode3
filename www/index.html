@@ -20,7 +20,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
               </button>
-              <a class="navbar-brand" href="#">Penmode3</a>
+              <span class="navbar-brand">Penmode3</span>
             </div>
             <div id="navbar" class="collapse navbar-collapse">
               <ul class="nav navbar-nav">
@@ -58,6 +58,29 @@
         <!-- /required -->
         <script type="text/javascript" src="js/jwt.js"></script>
         <script>
+          function getHash(lhash){
+            if(lhash==""){
+              $('#extra-content').hide();
+              $('#main-content').show();
+              $('#extra-content').html('');
+              $('a[href="#"]').click(function(){
+                  $("li.active").removeClass("active");
+                  $(this).parent().addClass("active");
+              });
+            }else{
+              var hash = lhash.replace(/\#/g,'');
+              $.get('template/'+hash+'.html', function(c) {
+                $('#extra-content').html(c);
+                $('#main-content').hide();
+                $('#extra-content').show();
+                $('a[href="#'+hash+'"]').click(function(){
+                    $("li.active").removeClass("active");
+                    $(this).parent().addClass("active");
+                });
+              });
+            }
+          }
+
           if(typeof io !== 'undefined'){
             var socket = io("http://localhost:13370");
             socket.on('login_required', function(){
@@ -93,19 +116,12 @@
           }
 
           $(window).on('hashchange', function() {
-            if(location.hash==""){
-              $('#extra-content').hide();
-              $('#main-content').show();
-              $('#extra-content').html('');
-            }else{
-              var hash = location.hash.replace(/\#/g,'');
-              $.get('template/'+hash+'.html', function(c) {
-                $('#extra-content').html(c);
-                $('#main-content').hide();
-                $('#extra-content').show();
-              });
-            }
+            getHash(location.hash);
           });
+
+          if(location.hash!=""){
+            getHash(location.hash);
+          }
 
           /*$.get('template/no-home.mst', function(template) {
             var rendered = Mustache.render(template, {});
