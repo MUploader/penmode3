@@ -28,6 +28,9 @@
                 <li><a href="#about">About</a></li>
                 <li><a href="https://github.com/TheZ3ro/penmode3" target="_blank">Source Code</a></li>
               </ul>
+              <form class="navbar-form navbar-right" id="logout">
+                <button id="logout-button" type="button" class="btn btn-primary">Logout</button>
+              </form>
             </div><!--/.nav-collapse -->
           </div>
         </nav>
@@ -53,101 +56,9 @@
         <script type="text/javascript" src="http://localhost:13370/socket.io/socket.io.js"></script>
         <!-- required for jwt -->
         <script type="text/javascript" src="js/sha.js"></script>
-        <script type="text/javascript" src="js/base64.js"></script>
-        <script type="text/javascript" src="js/base64x.js"></script>
         <!-- /required -->
         <script type="text/javascript" src="js/jwt.js"></script>
-        <script>
-          function getHash(lhash){
-            if(lhash==""){
-              $('#extra-content').hide();
-              $('#main-content').show();
-              $('#extra-content').html('');
-              $('a[href="#"]').click(function(){
-                  $("li.active").removeClass("active");
-                  $(this).parent().addClass("active");
-              });
-            }else{
-              var hash = lhash.replace(/\#/g,'');
-              $.get('template/'+hash+'.html', function(c) {
-                $('#extra-content').html(c);
-                $('#main-content').hide();
-                $('#extra-content').show();
-                $('a[href="#'+hash+'"]').click(function(){
-                    $("li.active").removeClass("active");
-                    $(this).parent().addClass("active");
-                });
-              });
-            }
-          }
 
-          if(typeof io !== 'undefined'){
-            var socket = io("http://localhost:13370");
-            socket.on('login_required', function(){
-              if(window.sessionStorage && sessionStorage.token!=undefined && sessionStorage.remember_me==1){
-                socket.emit('login', sessionStorage.token);
-              }else{
-                $.get('template/login.html', function(c) {
-                  $('#main-content').html(c);
-                  $('#login').click(function(){
-                    var token = new JWT().sign({"user":$("#inputUser").val()},$("#inputPassword").val());
-                    if(window.sessionStorage){
-                      sessionStorage.token=token;
-                      sessionStorage.remember_me=($('#remember-me').is(':checked')?1:0);
-                    }
-                    socket.emit('login', token);
-                  });
-                  $('#remember-me').click(function() {
-                      // Was false, become true with this click
-                      if ($(this).is(':checked')) {
-                        if(window.sessionStorage){
-                          sessionStorage.remember_me=1;
-                          return true; // Remain true
-                        }else{
-                          alert("sessionStorage is not supported!");
-                          return false; // Become false
-                        }
-                      }
-                  });
-                });
-              }
-            });
-            socket.on('authenticated', function(){
-              $.get('template/home.html', function(c) {
-                $('#main-content').html(c);
-              });
-              socket.emit('get_command_list');
-              socket.emit('ip_status');
-            });
-            socket.on('command_list',function(arr){
-              $.get('template/command_item.mst', function(template) {
-                var rendered = Mustache.render(template, {'commands':arr});
-                $('.command-list').html(rendered);
-                $('a.command').click(function() {
-                  alert($(this).data('command'));
-                });
-              });
-            });
-            socket.on('ip_status',function(ip_status){
-              $("#ip_status").html("<b>Penmode IP:</b> "+ip_status.ip+", <b>Tor:</b> "+(ip_status.tor?"<span class='green'>Enabled":"<span class='red'>Disabled")+"</span>");
-              $(".footer").show();
-            });
-            socket.on('disconnect', function(){});
-          }
-
-          $(window).on('hashchange', function() {
-            getHash(location.hash);
-          });
-
-          if(location.hash!=""){
-            getHash(location.hash);
-          }
-
-          /*$.get('template/no-home.mst', function(template) {
-            var rendered = Mustache.render(template, {});
-            $('#content').html(rendered);
-          });*/
-
-        </script>
+        <script type="text/javascript" src="js/main.js"></script>
     </body>
 </html>
