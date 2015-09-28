@@ -22,6 +22,13 @@ sudo chmod +x /opt/penmode3/app/penmode3
 ln -s /opt/penmode3/app/penmode3 /usr/bin/
 ```
 
+## TODO
+
+ * Better Frontend/Client UI
+ * PBKDF2 before JWT
+ * Finish the Socket.io communication protocol
+ * Write more Plugins
+
 ## Hacking/Improving penmode3
 If you are interested in Improving penmode3, or you only want to have
 some more information on how it works, read the [wiki](https://github.com/TheZ3ro/penmode3/wiki/)
