@@ -6,16 +6,6 @@
 var WebJWT = {};
 
 (function () {
-  WebJWT.crypto = window.crypto || window.msCrypto;
-  if (!WebJWT.crypto) {
-    throw new Error('crypto not found');
-  }
-
-  WebJWT.cryptoSubtle = WebJWT.crypto.subtle || WebJWT.crypto.webkitSubtle || WebJWT.crypto.Subtle;
-  if (!WebJWT.cryptoSubtle) {
-    throw new Error('crypto.subtle not found');
-  }
-
   WebJWT.base64ToBase64url = function (b64) {
     b64 = b64.replace(/\=/g, '');
     b64 = b64.replace(/\+/g, '-');
