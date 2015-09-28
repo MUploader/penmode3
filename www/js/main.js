@@ -24,7 +24,7 @@ function getHash (lhash) {
 if(typeof io !== 'undefined'){
   var socket = window.io('http://localhost:13370');
   socket.on('login_required', function () {
-    if(window.sessionStorage && window.sessionStorage.token !== undefined && window.sessionStorage.remember_me === 1) {
+    if(window.sessionStorage && sessionStorage.token != undefined && sessionStorage.remember_me == 1) {
       socket.emit('login', window.sessionStorage.token);
       $('#logout').show();
       $('#logout-button').click(function () {
