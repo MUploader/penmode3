@@ -50,12 +50,11 @@ var WebJWT = {};
   };
 
   var generate = function (key, header, claims) {
-    var hmacObj = new window.jsSHA('SHA-512', 'TEXT');
-    console.log(key);
-    hmacObj.setHMACKey(key, 'TEXT');
-    hmacObj.update(header + '.' + claims);
-    var out = hmacObj.getHMAC('B64');
-    return WebJWT.base64ToBase64url(out);
+    var hmac = CryptoJS.algo.HMAC.create(CryptoJS.algo.SHA512, key);
+    hmac.update(header + '.' + claims);
+    var hash = hmac.finalize();
+    hash = hash.toString(CryptoJS.enc.Base64);
+    return WebJWT.base64ToBase64url(hash);
   };
 
   var JsonWebTokenError = function (message, error) {

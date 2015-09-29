@@ -21,8 +21,8 @@ if (!argv.noServe) {
   var io = require('socket.io')();
 }
 
+var crypto = require('crypto');
 var request = require('request');
-var child_process = require('child_process');
 var plugins = [];
 var proc_n = null;
 
@@ -83,6 +83,9 @@ io.on('connection', function (socket) {
   var process = null;
 
   var p_callback = function (error, stdout, stderr) {
+    if (error) {
+      throw error;
+    }
     socket.emit('console', '' + stdout);
     socket.emit('console', '' + stderr);
     // io.sockets.emit('status', null);
@@ -97,14 +100,25 @@ io.on('connection', function (socket) {
 
   socket.emit('login_required');
 
-  socket.on('login', function (hash) {
+  socket.on('login', function (webauth) {
+    webauth = JSON.parse(webauth);
     for (var i = 0; i < login.length; i++) {
-      jwt.verify(hash, login[i].pass, function (err, decoded) {
-        if (decoded.user === login[i].user) {
-          console.log(socket.id);
-          auth.push(socket.id);
-          socket.emit('authenticated');
+      var user = login[i];
+      var salt = new Buffer(webauth.salt, 'hex');
+      crypto.pbkdf2(user.pass, salt, 1, 512 / 8, 'sha512', function (err, key) {
+        if (err) {
+          throw err;
         }
+        jwt.verify(webauth.token, key.toString('hex'), function (err, decoded) {
+          if (err) {
+            throw err;
+          }
+          if (decoded.user === user.user) {
+            console.log(socket.id);
+            auth.push(socket.id);
+            socket.emit('authenticated');
+          }
+        });
       });
     }
   });
