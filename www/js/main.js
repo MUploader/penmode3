@@ -24,11 +24,11 @@ function getHash (lhash) {
 if(typeof io !== 'undefined'){
   var socket = window.io('http://localhost:13370');
   socket.on('login_required', function () {
-    if(window.sessionStorage && sessionStorage.token != undefined && sessionStorage.remember_me == 1) {
-      socket.emit('login', window.sessionStorage.token);
+    if(window.sessionStorage && sessionStorage.webauth != undefined && sessionStorage.remember_me == 1) {
+      socket.emit('login', window.sessionStorage.webauth);
       $('#logout').show();
       $('#logout-button').click(function () {
-        sessionStorage.token = null;
+        sessionStorage.webauth = null;
         sessionStorage.remember_me = 0;
         window.history.go(0);
       });
@@ -36,12 +36,16 @@ if(typeof io !== 'undefined'){
       $.get('template/login.html', function(c) {
         $('#main-content').html(c);
         $('#login').click(function () {
-          var token = WebJWT.sign({'user':$('#inputUser').val()}, $('#inputPassword').val());
+          var salt = CryptoJS.lib.WordArray.random(128 / 8);
+          var key512Bits = CryptoJS.PBKDF2($('#inputPassword').val(), salt, { hasher:CryptoJS.algo.SHA512, keySize: 512 / 32, iterations: 1 });
+          var webauth = {};
+          webauth.salt = salt.toString(CryptoJS.enc.Hex);
+          webauth.token = WebJWT.sign({'user':$('#inputUser').val()}, key512Bits.toString(CryptoJS.enc.Hex));
           if(window.sessionStorage) {
-            sessionStorage.token = token;
+            sessionStorage.webauth = webauth;
             sessionStorage.remember_me = ($('#remember-me').is(':checked') ? 1 : 0);
           }
-          socket.emit('login', token);
+          socket.emit('login', JSON.stringify(webauth));
         });
         $('#remember-me').click(function () {
             // Was false, become true with this click

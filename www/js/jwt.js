@@ -51,7 +51,6 @@ var WebJWT = {};
 
   var generate = function (key, header, claims) {
     var hmacObj = new window.jsSHA('SHA-512', 'TEXT');
-    console.log(key);
     hmacObj.setHMACKey(key, 'TEXT');
     hmacObj.update(header + '.' + claims);
     var out = hmacObj.getHMAC('B64');
