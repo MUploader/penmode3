@@ -25,7 +25,6 @@ ln -s /opt/penmode3/app/penmode3 /usr/bin/
 ## TODO
 
  * Better Frontend/Client UI
- * PBKDF2 before JWT
  * Finish the Socket.io communication protocol
  * Write more Plugins
 
