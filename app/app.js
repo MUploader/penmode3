@@ -176,10 +176,17 @@ io.on('connection', function (socket) {
   });
 });
 
-// ExpressStatic file server
-app.use(express.static(argv.www || WEBPATH));
-// Server + Socket.io
-server.listen(argv.port || PORT);
+var msg = '';
+if (!argv.noServe) {
+  // ExpressStatic file server
+  app.use(express.static(argv.www || WEBPATH));
+  // Server + Socket.io
+  server.listen(argv.port || PORT);
+  msg = '[express+socket.io]';
+} else {
+  io.listen(argv.port || PORT);
+  msg = '[socket.io]';
+}
 console.log('Penmode3'.green +
-  ' [express+socket.io] listening on port ' + (argv.port || PORT) +
+  ' ' + msg + ' listening on port ' + (argv.port || PORT) +
   ' from ' + (argv.www || WEBPATH));
