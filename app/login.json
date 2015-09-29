@@ -2,7 +2,7 @@
   "login":[
     {
       "user":"thezero",
-      "pass":"anacleto"
+      "pass":"anacleto" //wtf is this shit? where the fuck is my fucking auth database with hashed keys?
     }
   ]
 }
