@@ -88,8 +88,6 @@ io.on('connection', function (socket) {
     return false;
   };
 
-  var en = new Engine(socket);
-
   socket.emit('login_required');
 
   socket.on('login', function (webauth) {
@@ -143,6 +141,7 @@ io.on('connection', function (socket) {
   socket.on('start_command', function (name) {
     if (!check_auth(socket.id)) { socket.emit('login_required'); return; }
     // If a server is already running or server doesn't exist
+    console.log(proc_n);
     if (proc_n || !plugins.contains(name)) {
       // Let the user know that it failed.
       socket.emit('fail', 'start_server');
@@ -152,8 +151,10 @@ io.on('connection', function (socket) {
 
     // Set which server is currently running
     proc_n = name;
-
-    require('./plugins/' + proc_n + '.js').execute(en);
+    var en = new Engine(socket);
+    require('./plugins/' + proc_n + '.js').execute(en, function (f) {
+      proc_n = null;
+    });
   });
 
   socket.on('command', function (cmd) {

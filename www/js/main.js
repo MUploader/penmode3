@@ -82,9 +82,9 @@ function init (ip) {
       '</span>');
     $('.footer').show();
   });
-  socket.on('status', function(msg){ console.log(msg)});
+  socket.on('status', function(msg){ console.log('status ' + msg)});
   socket.on('console', function(msg){ console.log(msg)});
-  socket.on('fail', function(msg){ console.log(msg)});
+  socket.on('fail', function(msg){ console.log('fail ' + msg)});
   socket.on('disconnect', function(){ console.log('disconnected')});
 }
 

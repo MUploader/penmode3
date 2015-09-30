@@ -1,7 +1,8 @@
 var spawn = require('child_process').spawn;
 var process = null;
 
-var execute = function (engine) {
+var execute = function (engine, cb) {
+  engine.started();
   process = spawn('ls', ['-lh', '/usr']);
   process.stdout.on('data', function (data) {
     if (data) {
@@ -17,7 +18,7 @@ var execute = function (engine) {
 
   process.on('exit', function () {
     process = null;
-    return engine.ended();
+    return cb(engine.ended());
   });
 };
 
