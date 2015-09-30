@@ -22,13 +22,12 @@ var execute = function (engine, cb) {
     process = null;
     return cb(engine.ended());
   });
-};
 
-var io = function (msg) {
-  process.stdin.write(msg + '\r');
+  engine.on('command', function (msg) {
+    process.stdin.write(msg + '\r');
+  });
 };
 
 module.exports = {
-  'execute': execute,
-  'io': io
+  'execute': execute
 };
