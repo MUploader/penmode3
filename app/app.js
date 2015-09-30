@@ -1,5 +1,5 @@
+#!/usr/bin/env node
 require('colors');
-
 var argv = require('yargs')
     .example('$0 --www ./www --plugins ./app/plugins -p 13370', '->'.red + ' Start penmode3 on port 13370 with folder')
     .option('www', {describe: 'Load web server from'})
