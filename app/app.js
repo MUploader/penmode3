@@ -121,9 +121,9 @@ io.on('connection', function (socket) {
     });
   });
 
-  socket.on('get_command_list', function () {
+  socket.on('get_plugin_list', function () {
     if (!check_auth(socket.id)) { socket.emit('login_required'); return; }
-    socket.emit('command_list', plugins);
+    socket.emit('plugin_list', plugins);
   });
 
   socket.on('get_ip_status', function () {
@@ -138,13 +138,12 @@ io.on('connection', function (socket) {
     });
   });
 
-  socket.on('start_command', function (name) {
+  socket.on('start_plugin', function (name) {
     if (!check_auth(socket.id)) { socket.emit('login_required'); return; }
     // If a server is already running or server doesn't exist
-    console.log(proc_n);
     if (proc_n || !plugins.contains(name)) {
       // Let the user know that it failed.
-      socket.emit('fail', 'start_server');
+      socket.emit('fail', 'start_plugin: ' + proc_n + ' is already running');
       // Stop execution of this callback
       return;
     }

@@ -6,6 +6,7 @@ var execute = function (engine, cb) {
     if (error) {
       throw error;
     }
+    engine.console('ps aux | grep firefox');
     engine.console(stdout);
     engine.console(stderr);
     return cb(engine.ended());

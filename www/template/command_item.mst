@@ -1,3 +1,0 @@
-{{#commands}}
- <a class="btn btn-primary command" data-command="{{.}}"><span class="server-name">{{.}}</span></a>
-{{/commands}}
