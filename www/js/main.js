@@ -21,16 +21,6 @@ function getHash (lhash) {
   }
 }
 
-function loadScript (url, callback) {
-  var script = document.createElement('script');
-  script.type = 'text/javascript';
-  script.onload = function () {
-    callback();
-  };
-  script.src = url;
-  document.getElementsByTagName('body')[0].appendChild(script);
-}
-
 function init (ip) {
   var socket = window.io(ip);
   socket.on('login_required', function () {
