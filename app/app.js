@@ -4,7 +4,7 @@ var argv = require('yargs')
     .example('$0 --www ./www --plugins ./app/plugins -p 13370', '->'.red + ' Start penmode3 on port 13370 with folder')
     .option('www', {describe: 'Load web server from'})
     .option('plugins', {describe: 'Load plugins from'})
-    .option('no-serve', {describe: 'Don\'t start the web server'})
+    .option('noserve', {alias: 'n', type: 'boolean', describe: 'Don\'t start the web server'})
     .option('port', {alias: 'p', describe: 'Socket.io [+ Server] Port'})
     .help('h')
     .alias('h', 'help')
@@ -12,7 +12,7 @@ var argv = require('yargs')
     .epilog('Do what you want cause a pirate is free! \n' + 'You are a Pirate!'.rainbow)
     .argv;
 
-if (!argv.noServe) {
+if (!argv.noserve) {
   var express = require('express');
   var app = express();
   var server = require('http').createServer(app);
@@ -102,25 +102,33 @@ io.on('connection', function (socket) {
 
   socket.on('login', function (webauth) {
     webauth = JSON.parse(webauth);
+    var user = null;
     for (var i = 0; i < login.length; i++) {
-      var user = login[i];
-      var salt = new Buffer(webauth.salt, 'hex');
-      crypto.pbkdf2(user.pass, salt, 1, 512 / 8, 'sha512', function (err, key) {
+      if (webauth.username == login[i].user) {
+        user = login[i];
+      }
+    }
+    if (user === undefined) {
+      // TODO: Socket.emit('fail');
+      throw Error();
+    }
+    var salt = new Buffer(webauth.salt, 'hex');
+    var pass = new Buffer(user.pass_sha512, 'hex');
+    crypto.pbkdf2(pass, salt, 1000, 512 / 8, 'sha512', function (err, key) {
+      if (err) {
+        throw err;
+      }
+      jwt.verify(webauth.token, key.toString('hex'), function (err, decoded) {
         if (err) {
           throw err;
         }
-        jwt.verify(webauth.token, key.toString('hex'), function (err, decoded) {
-          if (err) {
-            throw err;
-          }
-          if (decoded.user === user.user) {
-            console.log(socket.id);
-            auth.push(socket.id);
-            socket.emit('authenticated');
-          }
-        });
+        if (decoded.user === user.user) {
+          console.log(socket.id);
+          auth.push(socket.id);
+          socket.emit('authenticated');
+        }
       });
-    }
+    });
   });
 
   socket.on('get_command_list', function () {
@@ -191,7 +199,7 @@ io.on('connection', function (socket) {
 });
 
 var msg = '';
-if (!argv.noServe) {
+if (!argv.noserve) {
   // ExpressStatic file server
   app.use(express.static(argv.www || WEBPATH));
   // Server + Socket.io

@@ -21,15 +21,24 @@ function getHash (lhash) {
   }
 }
 
-if(typeof io !== 'undefined'){
-  var socket = window.io('http://localhost:13370');
+function loadScript (url, callback) {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.onload = function () {
+    callback();
+  };
+  script.src = url;
+  document.getElementsByTagName('body')[0].appendChild(script);
+}
+
+function init (ip) {
+  var socket = window.io(ip);
   socket.on('login_required', function () {
-    if(window.sessionStorage && sessionStorage.webauth != undefined && sessionStorage.remember_me == 1) {
-      socket.emit('login', window.sessionStorage.webauth);
+    if(window.sessionStorage && sessionStorage.webauth !== undefined) {
+      socket.emit('login', sessionStorage.webauth);
       $('#logout').show();
       $('#logout-button').click(function () {
-        sessionStorage.webauth = null;
-        sessionStorage.remember_me = 0;
+        sessionStorage.removeItem('webauth');
         window.history.go(0);
       });
     } else {
@@ -37,23 +46,21 @@ if(typeof io !== 'undefined'){
         $('#main-content').html(c);
         $('#login').click(function () {
           var salt = CryptoJS.lib.WordArray.random(128 / 8);
-          var key512Bits = CryptoJS.PBKDF2($('#inputPassword').val(), salt, { hasher:CryptoJS.algo.SHA512, keySize: 512 / 32, iterations: 1 });
+          var pass = CryptoJS.SHA512($('#inputPassword').val());
+          var key512Bits = CryptoJS.PBKDF2(pass, salt, { hasher:CryptoJS.algo.SHA512, keySize: 512 / 32, iterations: 1000 });
           var webauth = {};
+          webauth.username = $('#inputUser').val();
           webauth.salt = salt.toString(CryptoJS.enc.Hex);
           webauth.token = WebJWT.sign({'user':$('#inputUser').val()}, key512Bits.toString(CryptoJS.enc.Hex));
-          if(window.sessionStorage) {
-            sessionStorage.webauth = webauth;
-            sessionStorage.remember_me = ($('#remember-me').is(':checked') ? 1 : 0);
+          if(window.sessionStorage && $('#remember-me').is(':checked')) {
+            sessionStorage.webauth = JSON.stringify(webauth);
           }
           socket.emit('login', JSON.stringify(webauth));
         });
         $('#remember-me').click(function () {
             // Was false, become true with this click
             if ($(this).is(':checked')) {
-              if(window.sessionStorage) {
-                sessionStorage.remember_me = 1;
-                return true; // Remain true
-              } else {
+              if (!window.sessionStorage) {
                 alert('sessionStorage is not supported!');
                 return false; // Become false
               }
@@ -86,6 +93,12 @@ if(typeof io !== 'undefined'){
     $('.footer').show();
   });
   socket.on('disconnect', function(){});
+}
+
+if (typeof io !== 'undefined') {
+  init('http://localhost:13370');
+} else {
+  alert('Socket.io Server not found! \nHave you changed the port?');
 }
 
 $(window).on('hashchange', function () {
