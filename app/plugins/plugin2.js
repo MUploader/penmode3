@@ -1,7 +1,17 @@
 var exec = require('child_process').exec;
 
-var p = function(pcb,cb){
-  return cb(exec('ps aux | grep firefox',pcb),"exec");
+var execute = function (engine) {
+  var process = exec('ps aux | grep firefox', function (error, stdout, stderr) {
+    if (error) {
+      throw error;
+    }
+    engine.console(stdout);
+    engine.console(stderr);
+    return engine.ended();
+  });
 }
 
-module.exports = p;
+module.exports = {
+  'execute': execute,
+  'io': io
+};

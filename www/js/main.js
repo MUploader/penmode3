@@ -22,7 +22,7 @@ function getHash (lhash) {
 }
 
 function init (ip) {
-  var socket = window.io(ip);
+  socket = window.io(ip);
   socket.on('login_required', function () {
     if(window.sessionStorage && sessionStorage.webauth !== undefined) {
       socket.emit('login', sessionStorage.webauth);
@@ -82,10 +82,14 @@ function init (ip) {
       '</span>');
     $('.footer').show();
   });
-  socket.on('disconnect', function(){});
+  socket.on('status', function(msg){ console.log(msg)});
+  socket.on('console', function(msg){ console.log(msg)});
+  socket.on('fail', function(msg){ console.log(msg)});
+  socket.on('disconnect', function(){ console.log('disconnected')});
 }
 
 if (typeof io !== 'undefined') {
+  var socket = null;
   init('http://localhost:13370');
 } else {
   alert('Socket.io Server not found! \nHave you changed the port?');

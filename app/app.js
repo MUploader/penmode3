@@ -28,14 +28,15 @@ var proc_n = null;
 
 var jwt = require('./jwt.js');
 var login = require('./login.json').login;
+var Engine = require('./engine.js');
 var auth = [];
 
 var WEBPATH = require('path').resolve(__dirname, '../www');
 var PLUGINPATH = require('path').resolve(__dirname, './plugins');
 var PORT = 13370;
-var STATUS = {
-  started: 1,
-  ended: 2
+
+Array.prototype.contains = function (data) {
+  return this.indexOf(data) > -1;
 };
 
 // Load Plugins
@@ -80,23 +81,14 @@ function getIP (cb) {
 
 // Socket.io connection
 io.on('connection', function (socket) {
-  var process = null;
-
-  var p_callback = function (error, stdout, stderr) {
-    if (error) {
-      throw error;
-    }
-    socket.emit('console', '' + stdout);
-    socket.emit('console', '' + stderr);
-    // io.sockets.emit('status', null);
-  };
-
   var check_auth = function (socket_id) {
     if (auth.indexOf(socket_id) > -1) {
       return true;
     }
     return false;
   };
+
+  var en = new Engine(socket);
 
   socket.emit('login_required');
 
@@ -148,11 +140,10 @@ io.on('connection', function (socket) {
     });
   });
 
-  // When the client says to start a server...
   socket.on('start_command', function (name) {
     if (!check_auth(socket.id)) { socket.emit('login_required'); return; }
     // If a server is already running or server doesn't exist
-    if (process || !plugins[name]) {
+    if (proc_n || !plugins.contains(name)) {
       // Let the user know that it failed.
       socket.emit('fail', 'start_server');
       // Stop execution of this callback
@@ -162,36 +153,14 @@ io.on('connection', function (socket) {
     // Set which server is currently running
     proc_n = name;
 
-    require('./plugins/' + plugins[name] + '.js')(p_callback, function (proc, type) {
-      process = proc;
-      if (type === 'spawn') {
-        process.stdout.on('data', function (data) {
-          if (data) {
-            socket.emit('console', '' + data);
-          }
-        });
-
-        process.stderr.on('data', function (data) {
-          if (data) {
-            socket.emit('console', '' + data);
-          }
-        });
-
-        process.on('exit', function () {
-          process = proc_n = null;
-          socket.emit('status', STATUS.ended);
-        });
-      }
-    });
-
-    socket.emit('status', STATUS.started);
-  }); // End .on('start_server')
+    require('./plugins/' + proc_n + '.js').execute(en);
+  });
 
   socket.on('command', function (cmd) {
     if (!check_auth(socket.id)) { socket.emit('login_required'); return; }
-    if (process) {
-      socket.emit('console', 'Player Command: ' + cmd);
-      process.stdin.write(cmd + '\r');
+    if (proc_n) {
+      socket.emit('console', '> ' + cmd);
+      require('./plugins/' + proc_n + '.js').io(cmd);
     } else {
       socket.emit('fail', cmd);
     }
