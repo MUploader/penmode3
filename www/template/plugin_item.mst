@@ -1,0 +1,3 @@
+{{#plugins}}
+ <a class="btn btn-primary plugin" data-plugin="{{.}}"><span class="plugin-name">{{.}}</span></a>
+{{/plugins}}

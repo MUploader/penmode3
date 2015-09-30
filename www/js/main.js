@@ -22,7 +22,7 @@ function getHash (lhash) {
 }
 
 function init (ip) {
-  var socket = window.io(ip);
+  socket = window.io(ip);
   socket.on('login_required', function () {
     if(window.sessionStorage && sessionStorage.webauth !== undefined) {
       socket.emit('login', sessionStorage.webauth);
@@ -63,15 +63,20 @@ function init (ip) {
     $.get('template/home.html', function (c) {
       $('#main-content').html(c);
     });
-    socket.emit('get_command_list');
+    socket.emit('get_plugin_list');
     socket.emit('get_ip_status');
   });
-  socket.on('command_list', function (arr) {
-    $.get('template/command_item.mst', function (template) {
-      var rendered = Mustache.render(template, {'commands': arr});
-      $('.command-list').html(rendered);
-      $('a.command').click(function() {
-        alert($(this).data('command'));
+  socket.on('plugin_list', function (arr) {
+    $.get('template/plugin_item.mst', function (template) {
+      var rendered = Mustache.render(template, {'plugins': arr});
+      $('.plugin-list').html(rendered);
+      $('a.plugin').click(function() {
+        var plugin = $(this).data('plugin');
+        $.get('template/console.mst', function (template) {
+          var rendered = Mustache.render(template, {'name': plugin});
+          $('#main-content').html(rendered);
+          socket.emit('start_plugin', plugin);
+        });
       });
     });
   });
@@ -82,10 +87,21 @@ function init (ip) {
       '</span>');
     $('.footer').show();
   });
-  socket.on('disconnect', function(){});
+  socket.on('console', function (msg) {
+    var lines = msg.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if(lines[i] != '') {
+        $('ul.console').append($('<li>' + lines[i] + '</li>'));
+      }
+    }
+  });
+  socket.on('status', function(msg){ console.log('status ' + msg)});
+  socket.on('fail', function(msg){ console.log('fail ' + msg)});
+  socket.on('disconnect', function(){ console.log('disconnected')});
 }
 
 if (typeof io !== 'undefined') {
+  var socket = null;
   init('http://localhost:13370');
 } else {
   alert('Socket.io Server not found! \nHave you changed the port?');

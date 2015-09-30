@@ -1,7 +1,23 @@
 var exec = require('child_process').exec;
 
-var p = function(pcb,cb){
-  return cb(exec('ps aux | grep firefox',pcb),"exec");
+var execute = function (engine, cb) {
+  engine.started();
+  var process = exec('ps aux | grep firefox', function (error, stdout, stderr) {
+    if (error) {
+      throw error;
+    }
+    engine.console('ps aux | grep firefox');
+    engine.console(stdout);
+    engine.console(stderr);
+    return cb(engine.ended());
+  });
 }
 
-module.exports = p;
+var io = function () {
+
+}
+
+module.exports = {
+  'execute': execute,
+  'io': io
+};

@@ -1,0 +1,14 @@
+<div class="content-header">
+	<h1>{{name}} is Running</h1>
+	<a class="btn btn-danger stop" id="stop">Stop</a>
+</div>
+
+<div class="console">
+	<ul class="console"></ul>
+	<div class="command">
+		<div class="input-group">
+		  <span class="input-group-addon" id="addon1">></span>
+		  <input type="text" class="form-control" aria-describedby="addon1">
+		</div>
+	</div>
+</div>
