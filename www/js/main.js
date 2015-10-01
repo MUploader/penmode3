@@ -8,14 +8,35 @@ function getHash (lhash) {
         $(this).parent().addClass('active');
     });
   } else {
+    if (lhash.split('_')[0] == '#plugin') { return; }
     var hash = lhash.replace(/\#/g, '');
-    $.get('template/'+hash+'.html', function(c) {
+    $.get('template/' + hash + '.html', function (c) {
       $('#extra-content').html(c);
       $('#main-content').hide();
       $('#extra-content').show();
       $('a[href="#' + hash + '"]').click(function () {
           $('li.active').removeClass('active');
           $(this).parent().addClass('active');
+      });
+    });
+  }
+}
+
+function executeHash (lhash) {
+  if (lhash.split('_')[0] == '#plugin') {
+    plugin = lhash.split('_')[1];
+    $.get('template/console.mst', function (template) {
+      var rendered = Mustache.render(template, {'name': plugin});
+      $('#main-content').html(rendered);
+      $('#extra-content').hide();
+      $('#main-content').show();
+      $('#extra-content').html('');
+      socket.emit('start_plugin', plugin);
+      $('#back').click(function () {
+        $.get('template/home.html', function (c) {
+          $('#main-content').html(c);
+        });
+        socket.emit('get_plugin_list');
       });
     });
   }
@@ -60,6 +81,7 @@ function init (ip) {
       $('#pirate').show();
     });
     socket.emit('get_plugin_list');
+    //executeHash(window.location.hash);
     socket.emit('get_ip_status');
   });
   socket.on('plugin_list', function (arr) {
