@@ -39,41 +39,19 @@ $.fn.serializeObject = function () {
 
 function init (ip) {
   socket = window.io(ip);
-  socket.on('login_required', function () {
-    if(window.sessionStorage && sessionStorage.webauth !== undefined) {
-      socket.emit('login', sessionStorage.webauth);
-      $('#logout').show();
-      $('#logout-button').click(function () {
-        sessionStorage.removeItem('webauth');
-        window.history.go(0);
+  socket.on('login_required', function (salt_hex) {
+    $.get('template/login.html', function(c) {
+      $('#main-content').html(c);
+      $('#login').click(function () {
+        var salt = CryptoJS.enc.Hex.parse(salt_hex);
+        var pass = CryptoJS.SHA512($('#inputPassword').val());
+        var key512Bits = CryptoJS.PBKDF2(pass, salt, { hasher:CryptoJS.algo.SHA512, keySize: 512 / 32, iterations: 1000 });
+        var webauth = {};
+        webauth.username = $('#inputUser').val();
+        webauth.token = WebJWT.sign({'user':$('#inputUser').val(),'socket':socket.id}, key512Bits.toString(CryptoJS.enc.Hex));
+        socket.emit('login', JSON.stringify(webauth));
       });
-    } else {
-      $.get('template/login.html', function(c) {
-        $('#main-content').html(c);
-        $('#login').click(function () {
-          var salt = CryptoJS.lib.WordArray.random(128 / 8);
-          var pass = CryptoJS.SHA512($('#inputPassword').val());
-          var key512Bits = CryptoJS.PBKDF2(pass, salt, { hasher:CryptoJS.algo.SHA512, keySize: 512 / 32, iterations: 1000 });
-          var webauth = {};
-          webauth.username = $('#inputUser').val();
-          webauth.salt = salt.toString(CryptoJS.enc.Hex);
-          webauth.token = WebJWT.sign({'user':$('#inputUser').val(),'socket':socket.id}, key512Bits.toString(CryptoJS.enc.Hex));
-          if(window.sessionStorage && $('#remember-me').is(':checked')) {
-            sessionStorage.webauth = JSON.stringify(webauth);
-          }
-          socket.emit('login', JSON.stringify(webauth));
-        });
-        $('#remember-me').click(function () {
-            // Was false, become true with this click
-            if ($(this).is(':checked')) {
-              if (!window.sessionStorage) {
-                alert('sessionStorage is not supported!');
-                return false; // Become false
-              }
-            }
-        });
-      });
-    }
+    });
   });
   socket.on('authenticated', function () {
     console.log(socket.id);
@@ -146,9 +124,11 @@ function init (ip) {
   socket.on('status', function (msg) {
     if (parseInt(msg) == 1) {
       $('#back').attr('disabled', true);
+      $('#stop').attr('disabled', false);
       $('#command_text').attr('disabled', false);
     } else if (parseInt(msg) == 2) {
       $('#back').attr('disabled', false);
+      $('#stop').attr('disabled', true);
       $('#command_text').attr('disabled', true);
     }
     console.log('status ' + msg);

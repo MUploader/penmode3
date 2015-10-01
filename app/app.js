@@ -88,7 +88,12 @@ io.on('connection', function (socket) {
     return false;
   };
 
-  socket.emit('login_required');
+  try {
+    var salt = crypto.randomBytes(16);
+    socket.emit('login_required', salt.toString('hex'));
+  } catch (ex) {
+    socket.emit('fail', 'Error: event: "connection", message: ' + ex);
+  }
 
   socket.on('login', function (webauth) {
     webauth = JSON.parse(webauth);
@@ -102,7 +107,6 @@ io.on('connection', function (socket) {
       // TODO: Socket.emit('fail');
       throw Error();
     }
-    var salt = new Buffer(webauth.salt, 'hex');
     var pass = new Buffer(user.pass_sha512, 'hex');
     crypto.pbkdf2(pass, salt, 1000, 512 / 8, 'sha512', function (err, key) {
       if (err) {
