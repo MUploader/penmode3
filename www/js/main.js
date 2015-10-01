@@ -57,7 +57,7 @@ function init (ip) {
           var webauth = {};
           webauth.username = $('#inputUser').val();
           webauth.salt = salt.toString(CryptoJS.enc.Hex);
-          webauth.token = WebJWT.sign({'user':$('#inputUser').val()}, key512Bits.toString(CryptoJS.enc.Hex));
+          webauth.token = WebJWT.sign({'user':$('#inputUser').val(),'socket':socket.id}, key512Bits.toString(CryptoJS.enc.Hex));
           if(window.sessionStorage && $('#remember-me').is(':checked')) {
             sessionStorage.webauth = JSON.stringify(webauth);
           }
@@ -76,6 +76,7 @@ function init (ip) {
     }
   });
   socket.on('authenticated', function () {
+    console.log(socket.id);
     $.get('template/home.html', function (c) {
       $('#main-content').html(c);
       $('#pirate').show();
@@ -135,11 +136,25 @@ function init (ip) {
         socket.emit('io',JSON.stringify(io_response));
         $('#ioModal').modal('hide');
       });
+      $('#command_text').keyup(function(event) {
+        if (event.which == 13) {
+          socket.emit('command',$(this).val());
+        }
+      });
     });
   });
-  socket.on('status', function(msg){ console.log('status ' + msg)});
-  socket.on('fail', function(msg){ console.log('fail ' + msg)});
-  socket.on('disconnect', function(){ console.log('disconnected')});
+  socket.on('status', function (msg) {
+    if (parseInt(msg) == 1) {
+      $('#back').attr('disabled', true);
+      $('#command_text').attr('disabled', false);
+    } else if (parseInt(msg) == 2) {
+      $('#back').attr('disabled', false);
+      $('#command_text').attr('disabled', true);
+    }
+    console.log('status ' + msg);
+  });
+  socket.on('fail', function (msg) { alert('fail ' + msg); });
+  socket.on('disconnect', function () { console.log('disconnected'); });
 }
 
 if (typeof io !== 'undefined') {

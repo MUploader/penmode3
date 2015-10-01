@@ -9,7 +9,7 @@
 	<div class="command">
 		<div class="input-group">
 		  <span class="input-group-addon" id="addon1">></span>
-		  <input type="text" class="form-control" aria-describedby="addon1">
+		  <input id="command_text" type="text" class="form-control" aria-describedby="addon1">
 		</div>
 	</div>
 </div>

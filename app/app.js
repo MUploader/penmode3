@@ -112,7 +112,7 @@ io.on('connection', function (socket) {
         if (err) {
           throw err;
         }
-        if (decoded.user === user.user) {
+        if (decoded.user === user.user && decoded.socket == socket.id) {
           console.log(socket.id);
           auth.push(socket.id);
           proc_n = null;
@@ -144,7 +144,7 @@ io.on('connection', function (socket) {
     // If a server is already running or server doesn't exist
     if (proc_n || !plugins.contains(name)) {
       // Let the user know that it failed.
-      socket.emit('fail', 'start_plugin: ' + proc_n + ' is already running');
+      socket.emit('fail', 'Error: event: "start_plugin", message: ' + proc_n + ' is already running');
       // Stop execution of this callback
       return;
     }
@@ -162,7 +162,7 @@ io.on('connection', function (socket) {
     if (proc_n) {
       socket.emit('console', '> ' + cmd);
     } else {
-      socket.emit('fail', cmd);
+      socket.emit('fail', 'Error: event: "command", message: No process Running');
     }
   });
 });
