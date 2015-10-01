@@ -14,6 +14,7 @@ body {
   /* Set the fixed height of the footer here */
   height: 28px;
   background-color: #f5f5f5;
+  z-index: 10;
 }
 #ip_status {
   text-align: right;
@@ -65,6 +66,9 @@ body {
 #login {
   margin-bottom: 20px;
 }
+.pirate {
+  display: none;
+}
 #logout {
   display: none;
 }
@@ -83,6 +87,9 @@ ul.console {
 }
 ul.console li {
   font-family: monospace;
+}
+ul.console li.input:before {
+  content: "> ";
 }
 ul.console li:before {
   content: "$ ";

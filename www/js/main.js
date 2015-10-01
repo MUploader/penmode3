@@ -21,6 +21,22 @@ function getHash (lhash) {
   }
 }
 
+$.fn.serializeObject = function () {
+   var o = {};
+   var a = this.serializeArray();
+   $.each(a, function () {
+       if (o[this.name]) {
+           if (!o[this.name].push) {
+               o[this.name] = [o[this.name]];
+           }
+           o[this.name].push(this.value || '');
+       } else {
+           o[this.name] = this.value || '';
+       }
+   });
+   return o;
+};
+
 function init (ip) {
   socket = window.io(ip);
   socket.on('login_required', function () {
@@ -62,6 +78,7 @@ function init (ip) {
   socket.on('authenticated', function () {
     $.get('template/home.html', function (c) {
       $('#main-content').html(c);
+      $('#pirate').show();
     });
     socket.emit('get_plugin_list');
     socket.emit('get_ip_status');
@@ -71,11 +88,17 @@ function init (ip) {
       var rendered = Mustache.render(template, {'plugins': arr});
       $('.plugin-list').html(rendered);
       $('a.plugin').click(function() {
-        var plugin = $(this).data('plugin');
+        plugin = $(this).data('plugin');
         $.get('template/console.mst', function (template) {
           var rendered = Mustache.render(template, {'name': plugin});
           $('#main-content').html(rendered);
           socket.emit('start_plugin', plugin);
+          $('#back').click(function () {
+            $.get('template/home.html', function (c) {
+              $('#main-content').html(c);
+            });
+            socket.emit('get_plugin_list');
+          });
         });
       });
     });
@@ -91,9 +114,28 @@ function init (ip) {
     var lines = msg.split('\n');
     for (var i = 0; i < lines.length; i++) {
       if(lines[i] != '') {
-        $('ul.console').append($('<li>' + lines[i] + '</li>'));
+        var line = null;
+        if (lines[i].substr(0, 2) == '> ') {
+          line = $('<li class="input">' + lines[i].substr(2,lines[i].length) + '</li>');
+        } else {
+          line = $('<li>' + lines[i] + '</li>');
+        }
+        $('ul.console').append(line);
       }
     }
+  });
+  socket.on('request_io', function (object) {
+    var io = JSON.parse(object);
+    $.get('template/request_io.mst', function (template) {
+      var rendered = Mustache.render(template, {'plugin': plugin, 'io': io});
+      $('#main-content').append(rendered);
+      $('#ioModal').modal('show');
+      $('#send_io').click(function() {
+        var io_response = $('#ioForm').serializeObject();
+        socket.emit('io',JSON.stringify(io_response));
+        $('#ioModal').modal('hide');
+      });
+    });
   });
   socket.on('status', function(msg){ console.log('status ' + msg)});
   socket.on('fail', function(msg){ console.log('fail ' + msg)});
@@ -102,6 +144,7 @@ function init (ip) {
 
 if (typeof io !== 'undefined') {
   var socket = null;
+  var plugin = null;
   init('http://localhost:13370');
 } else {
   alert('Socket.io Server not found! \nHave you changed the port?');
@@ -109,6 +152,10 @@ if (typeof io !== 'undefined') {
 
 $(window).on('hashchange', function () {
   getHash(window.location.hash);
+});
+
+$(window).bind('beforeunload', function(){
+  return 'Are you sure you want to leave?';
 });
 
 if (window.location.hash !== '') {

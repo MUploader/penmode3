@@ -115,6 +115,7 @@ io.on('connection', function (socket) {
         if (decoded.user === user.user) {
           console.log(socket.id);
           auth.push(socket.id);
+          proc_n = null;
           socket.emit('authenticated');
         }
       });
@@ -160,7 +161,6 @@ io.on('connection', function (socket) {
     if (!check_auth(socket.id)) { socket.emit('login_required'); return; }
     if (proc_n) {
       socket.emit('console', '> ' + cmd);
-      require('./plugins/' + proc_n + '.js').io(cmd);
     } else {
       socket.emit('fail', cmd);
     }

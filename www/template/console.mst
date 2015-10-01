@@ -1,6 +1,7 @@
 <div class="content-header">
 	<h1>{{name}} is Running</h1>
-	<a class="btn btn-danger stop" id="stop">Stop</a>
+	<a class="btn btn-danger" id="stop">Stop</a>
+	<a class="btn btn-primary" id="back">Back</a>
 </div>
 
 <div class="console">
