@@ -7,8 +7,9 @@ function getHash (lhash) {
         $('li.active').removeClass('active');
         $(this).parent().addClass('active');
     });
+    setHash('');
   } else {
-    if (lhash.split('_')[0] == '#plugin') { return; }
+    if (lhash.split('_')[0] === '#plugin') { return; }
     var hash = lhash.replace(/\#/g, '');
     $.get('template/' + hash + '.html', function (c) {
       $('#extra-content').html(c);
@@ -23,7 +24,7 @@ function getHash (lhash) {
 }
 
 function executeHash (lhash) {
-  if (lhash.split('_')[0] == '#plugin') {
+  if (lhash.split('_')[0] === '#plugin') {
     plugin = lhash.split('_')[1];
     $.get('template/console.mst', function (template) {
       var rendered = Mustache.render(template, {'name': plugin});
@@ -39,6 +40,16 @@ function executeHash (lhash) {
         socket.emit('get_plugin_list');
       });
     });
+  }
+}
+
+function setHash (lhash) {
+  console.log(lhash);
+  if (lhash === '') {
+    window.location.hash = '';
+    history.pushState('', document.title, window.location.pathname);
+  } else {
+    window.location.hash = lhash;
   }
 }
 
@@ -95,11 +106,21 @@ function init (ip) {
           var rendered = Mustache.render(template, {'name': plugin});
           $('#main-content').html(rendered);
           socket.emit('start_plugin', plugin);
+          setHash('#plugin_' + plugin);
           $('#back').click(function () {
             $.get('template/home.html', function (c) {
               $('#main-content').html(c);
+              setHash('');
+              socket.emit('get_plugin_list');
             });
-            socket.emit('get_plugin_list');
+          });
+          $('#stop').click(function () {
+            socket.emit('stop');
+            $.get('template/home.html', function (c) {
+              $('#main-content').html(c);
+              setHash('');
+              socket.emit('get_plugin_list');
+            });
           });
         });
       });
@@ -133,9 +154,11 @@ function init (ip) {
       $('#main-content').append(rendered);
       $('#ioModal').modal('show');
       $('#send_io').click(function() {
+        $('#ioModal').modal('hide');
+      });
+      $('#ioModal').on('hide.bs.modal', function (e) {
         var io_response = $('#ioForm .form-control').serializeObject();
         socket.emit('io',JSON.stringify(io_response));
-        $('#ioModal').modal('hide');
       });
       $('#command_text').keyup(function(event) {
         if (event.which == 13) {
@@ -143,7 +166,7 @@ function init (ip) {
         }
       });
     });
-  });
+  })
   socket.on('status', function (msg) {
     if (parseInt(msg) == 1) {
       $('#back').attr('disabled', true);

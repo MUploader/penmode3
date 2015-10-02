@@ -5,9 +5,10 @@ var STATUS = {
   ended: 2
 };
 
-function engine (socket) {
+function engine (socket, proc_n) {
   var self = this;
   this.socket = socket;
+  this.proc_n = proc_n;
   this.status = 0;
   events.EventEmitter.call(this);
 
@@ -31,7 +32,7 @@ engine.prototype.console = function (data) {
 
 engine.prototype.fail = function (msg) {
   if (!this.isRunning()) { this.started(); }
-  this.socket.emit('fail', '' + msg);
+  this.socket.emit('fail', 'Error: event: "' + this.proc_n + '", message: ' + msg);
 };
 
 engine.prototype.request_io = function (object) {

@@ -155,7 +155,7 @@ io.on('connection', function (socket) {
 
     // Set which server is currently running
     proc_n = name;
-    var en = new Engine(socket);
+    var en = new Engine(socket, proc_n);
     try {
       var plugin_path = require('path').join((argv.plugins || PLUGINPATH), proc_n + '.js');
       require(plugin_path).execute(en, function (f) {
@@ -164,6 +164,10 @@ io.on('connection', function (socket) {
     } catch (ex) {
       socket.emit('fail', 'Error: event: "start_plugin", message: Plugin file not found ' + plugin_path);
     }
+  });
+
+  socket.on('stop', function () {
+    proc_n = null;
   });
 
   socket.on('command', function (cmd) {
