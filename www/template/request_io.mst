@@ -6,12 +6,12 @@
         <h4 class="modal-title" id="modalTitle">{{plugin}} IO</h4>
       </div>
       <div class="modal-body">
-        <form id="ioForm">
+        <div id="ioForm">
           {{#io}}
           <input name="{{param}}" class="form-control" placeholder="{{param}}" type="text">
           <br>
           {{/io}}
-        </form>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

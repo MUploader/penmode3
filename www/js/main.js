@@ -43,19 +43,20 @@ function executeHash (lhash) {
 }
 
 $.fn.serializeObject = function () {
-   var o = {};
-   var a = this.serializeArray();
-   $.each(a, function () {
-       if (o[this.name]) {
-           if (!o[this.name].push) {
-               o[this.name] = [o[this.name]];
-           }
-           o[this.name].push(this.value || '');
-       } else {
-           o[this.name] = this.value || '';
-       }
-   });
-   return o;
+  var o = {};
+  this.each(function () {
+    var value = $(this).val();
+    var name = $(this).attr('name');
+    if (o[name]) {
+      if (!o[name].push) {
+        o[name] = [o[name]];
+      }
+      o[name].push(value || '');
+    } else {
+      o[name] = value || '';
+    }
+  });
+  return o;
 };
 
 function init (ip) {
@@ -81,7 +82,7 @@ function init (ip) {
       $('#pirate').show();
     });
     socket.emit('get_plugin_list');
-    //executeHash(window.location.hash);
+    executeHash(window.location.hash);
     socket.emit('get_ip_status');
   });
   socket.on('plugin_list', function (arr) {
@@ -132,7 +133,7 @@ function init (ip) {
       $('#main-content').append(rendered);
       $('#ioModal').modal('show');
       $('#send_io').click(function() {
-        var io_response = $('#ioForm').serializeObject();
+        var io_response = $('#ioForm .form-control').serializeObject();
         socket.emit('io',JSON.stringify(io_response));
         $('#ioModal').modal('hide');
       });
