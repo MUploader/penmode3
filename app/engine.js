@@ -10,10 +10,13 @@ function engine (socket, proc_n) {
   this.socket = socket;
   this.proc_n = proc_n;
   this.status = 0;
+  this.interactive = true;
   events.EventEmitter.call(this);
 
   socket.on('command', function (msg) {
-    self.emit('command', msg);
+    if (self.interactive){
+      self.emit('command', msg);
+    }
   });
 
   socket.on('io', function (str_object) {
@@ -41,6 +44,10 @@ engine.prototype.request_io = function (object) {
   } else {
     this.socket.emit('request_io', JSON.stringify(object));
   }
+};
+
+engine.prototype.setInteractive = function (bool) {
+  this.interactive = bool;
 };
 
 engine.prototype.started = function () {

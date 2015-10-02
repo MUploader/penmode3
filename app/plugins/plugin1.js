@@ -19,7 +19,6 @@ var execute = function (engine, cb) {
   });
 
   process.on('exit', function () {
-    process = null;
     return cb(engine.ended());
   });
 
