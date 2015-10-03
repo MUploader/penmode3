@@ -1,4 +1,0 @@
-#!/bin/sh
-ARGV="$@"
-DIR=`dirname $0`
-node $DIR/app $ARGV

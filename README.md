@@ -28,6 +28,7 @@ $ penmode3
 ## TODO
 
  * Write more Plugins
+ * Download command output (export)
 
 
 ## Hacking/Improving penmode3
