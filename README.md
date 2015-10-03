@@ -27,10 +27,7 @@ $ penmode3
 
 ## TODO
 
- * Better Frontend/Client UI
  * Write more Plugins
- * More joke with location hash and path
- * Review all the wiki and the gh-pages
 
 
 ## Hacking/Improving penmode3

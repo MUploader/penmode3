@@ -25,6 +25,10 @@ var execute = function (engine, cb) {
   engine.on('command', function (msg) {
     process.stdin.write(msg + '\r');
   });
+
+  engine.on('stop', function () {
+    process.kill();
+  });
 };
 
 module.exports = {

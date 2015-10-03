@@ -1,4 +1,5 @@
 var events = require('events');
+var Convert = require('ansi-to-html');
 
 var STATUS = {
   started: 1,
@@ -11,6 +12,7 @@ function engine (socket, proc_n) {
   this.proc_n = proc_n;
   this.status = 0;
   this.interactive = true;
+  this.convert = new Convert();
   events.EventEmitter.call(this);
 
   socket.on('command', function (msg) {
@@ -22,15 +24,27 @@ function engine (socket, proc_n) {
   socket.on('io', function (str_object) {
     self.emit('io', str_object);
   });
+
+  socket.on('stop', function () {
+    self.emit('stop');
+  });
 }
 
 engine.prototype.isRunning = function () {
   return this.status === STATUS.started;
 };
 
-engine.prototype.console = function (data) {
+engine.prototype.console = function (data, colors) {
   if (!this.isRunning()) { this.started(); }
-  this.socket.emit('console', '' + data);
+  if (typeof colors == 'undefined'){
+    colors = false;
+  }
+  if(colors){
+    data = this.convert.toHtml('' + data)
+  } else {
+    data = '' + data;
+  }
+  this.socket.emit('console',data);
 };
 
 engine.prototype.fail = function (msg) {
