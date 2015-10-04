@@ -2,6 +2,7 @@
 	<h1>{{name}} is Running</h1>
 	<button class="btn btn-danger" id="stop">Stop</button>
 	<button class="btn btn-primary" id="back">Back</button>
+	<button class="btn btn-primary" id="download">Download the report</button>
 </div>
 
 <div class="console">

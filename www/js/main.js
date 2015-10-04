@@ -72,6 +72,7 @@ $.fn.serializeObject = function () {
 
 function init (ip) {
   socket = window.io(ip);
+
   socket.on('login_required', function (salt_hex) {
     $.get('template/login.html', function(c) {
       $('#main-content').html(c);
@@ -86,6 +87,7 @@ function init (ip) {
       });
     });
   });
+
   socket.on('authenticated', function () {
     console.log(socket.id);
     $.get('template/home.html', function (c) {
@@ -96,6 +98,7 @@ function init (ip) {
     executeHash(window.location.hash);
     socket.emit('get_ip_status');
   });
+
   socket.on('plugin_list', function (arr) {
     $.get('template/plugin_item.mst', function (template) {
       var rendered = Mustache.render(template, {'plugins': arr});
@@ -126,6 +129,7 @@ function init (ip) {
       });
     });
   });
+
   socket.on('ip_status', function (ip_status) {
     $('#ip_status').html(
       '<b>Penmode IP:</b> ' + ip_status.ip +
@@ -133,6 +137,7 @@ function init (ip) {
       '</span>');
     $('.footer').show();
   });
+
   socket.on('console', function (msg) {
     var lines = msg.split('\n');
     for (var i = 0; i < lines.length; i++) {
@@ -147,6 +152,7 @@ function init (ip) {
       }
     }
   });
+
   socket.on('request_io', function (object) {
     var io = JSON.parse(object);
     $.get('template/request_io.mst', function (template) {
@@ -166,20 +172,29 @@ function init (ip) {
         }
       });
     });
-  })
+  });
+
   socket.on('status', function (msg) {
     if (parseInt(msg) == 1) {
       $('#back').attr('disabled', true);
+      $('#download').attr('disabled', true);
       $('#stop').attr('disabled', false);
       $('#command_text').attr('disabled', false);
     } else if (parseInt(msg) == 2) {
       $('#back').attr('disabled', false);
+      $('#download').attr('disabled', false);
       $('#stop').attr('disabled', true);
       $('#command_text').attr('disabled', true);
     }
     console.log('status ' + msg);
   });
-  socket.on('fail', function (msg) { alert('fail ' + msg); });
+
+  socket.on('fail', function (msg) {
+    console.log(msg);
+    var f = JSON.parse(msg);
+    alert('Penmode3 Error: \nevent: "' + f.event + '", \nmessage: ' + f.message);
+  });
+
   socket.on('disconnect', function () { console.log('disconnected'); });
 }
 
@@ -195,7 +210,7 @@ $(window).on('hashchange', function () {
   getHash(window.location.hash);
 });
 
-$(window).bind('beforeunload', function(){
+$(window).bind('beforeunload', function () {
   return 'Are you sure you want to leave?';
 });
 

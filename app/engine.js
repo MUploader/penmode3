@@ -1,5 +1,6 @@
 var events = require('events');
 var Convert = require('ansi-to-html');
+var EpicFail = require('./fail.js');
 
 var STATUS = {
   started: 1,
@@ -17,6 +18,7 @@ function engine (socket, proc_n) {
 
   socket.on('command', function (msg) {
     if (self.interactive){
+      // TODO: Parse the input
       self.emit('command', msg);
     }
   });
@@ -49,7 +51,8 @@ engine.prototype.console = function (data, colors) {
 
 engine.prototype.fail = function (msg) {
   if (!this.isRunning()) { this.started(); }
-  this.socket.emit('fail', 'Error: event: "' + this.proc_n + '", message: ' + msg);
+  var fail = new EpicFail(this.proc_n, msg);
+  this.socket.emit('fail', fail.stringify());
 };
 
 engine.prototype.request_io = function (object) {

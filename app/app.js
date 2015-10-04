@@ -29,6 +29,7 @@ var proc_n = null;
 var jwt = require('./jwt.js');
 var login = require('./login.json').login;
 var Engine = require('./engine.js');
+var Fail = require('./fail.js');
 var auth = [];
 
 var WEBPATH = require('path').resolve(__dirname, '../www');
@@ -92,7 +93,8 @@ io.on('connection', function (socket) {
     var salt = crypto.randomBytes(16);
     socket.emit('login_required', salt.toString('hex'));
   } catch (ex) {
-    socket.emit('fail', 'Error: event: "connection", message: ' + ex);
+    var fail = new Fail('connection', ex);
+    socket.emit('fail', fail.stringify());
   }
 
   socket.on('login', function (webauth) {
@@ -104,8 +106,9 @@ io.on('connection', function (socket) {
       }
     }
     if (user === undefined) {
-      // TODO: Socket.emit('fail');
-      throw Error();
+      var fail = new Fail('login', 'user is undefined');
+      Socket.emit('fail', fail.stringify());
+      return;
     }
     var pass = new Buffer(user.pass_sha512, 'hex');
     crypto.pbkdf2(pass, salt, 1000, 512 / 8, 'sha512', function (err, key) {
@@ -148,7 +151,8 @@ io.on('connection', function (socket) {
     // If a server is already running or server doesn't exist
     if (proc_n || !plugins.contains(name)) {
       // Let the user know that it failed.
-      socket.emit('fail', 'Error: event: "start_plugin", message: ' + proc_n + ' is already running');
+      var fail = new Fail('start_plugin', proc_n + ' is already running');
+      socket.emit('fail', fail.stringify());
       // Stop execution of this callback
       return;
     }
@@ -162,7 +166,8 @@ io.on('connection', function (socket) {
         proc_n = null;
       });
     } catch (ex) {
-      socket.emit('fail', 'Error: event: "start_plugin", message: Plugin file not found ' + plugin_path);
+      var fail = new Fail('start_plugin', 'Plugin file not found ' + plugin_path);
+      socket.emit('fail', fail.stringify());
     }
   });
 
@@ -175,7 +180,8 @@ io.on('connection', function (socket) {
     if (proc_n) {
       socket.emit('console', '> ' + cmd);
     } else {
-      socket.emit('fail', 'Error: event: "command", message: No process Running');
+      var fail = new Fail('command', 'No process Running');
+      socket.emit('fail', fail.stringify());
     }
   });
 });
