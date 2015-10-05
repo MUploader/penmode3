@@ -2,7 +2,6 @@ function epicfail (fevent, message) {
   this.f = {};
   this.f.event = fevent;
   this.f.message = message;
-  //return this.f;
 }
 
 epicfail.prototype.stringify = function () {

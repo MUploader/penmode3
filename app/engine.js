@@ -17,9 +17,14 @@ function engine (socket, proc_n) {
   events.EventEmitter.call(this);
 
   socket.on('command', function (msg) {
-    if (self.interactive){
-      // TODO: Parse the input
-      self.emit('command', msg);
+    if (self.interactive) {
+      // String, Int or File. I hope no Plugin will let execute command directly
+      // `shutdown -r now`
+      if (/^[a-zA-Z0-9\s\-\.\_]+$/.exec(msg) != null){
+        self.emit('command', msg);
+      } else {
+        self.fail('Command contains illegal character!');
+      }
     }
   });
 
@@ -38,15 +43,15 @@ engine.prototype.isRunning = function () {
 
 engine.prototype.console = function (data, colors) {
   if (!this.isRunning()) { this.started(); }
-  if (typeof colors == 'undefined'){
+  if (typeof colors === 'undefined') {
     colors = false;
   }
-  if(colors){
-    data = this.convert.toHtml('' + data)
+  if (colors) {
+    data = this.convert.toHtml('' + data);
   } else {
     data = '' + data;
   }
-  this.socket.emit('console',data);
+  this.socket.emit('console', data);
 };
 
 engine.prototype.fail = function (msg) {
