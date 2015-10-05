@@ -27,7 +27,7 @@ function executeHash (lhash) {
   if (lhash.split('_')[0] === '#plugin') {
     plugin = lhash.split('_')[1];
     $.get('template/console.mst', function (template) {
-      var rendered = Mustache.render(template, {'name': plugin});
+      var rendered = Mustache.render(template, {'name': plugin, 'date': new Date().today()});
       $('#main-content').html(rendered);
       $('#extra-content').hide();
       $('#main-content').show();
@@ -70,6 +70,25 @@ $.fn.serializeObject = function () {
   return o;
 };
 
+Date.prototype.today = function () {
+    return ((this.getDate() < 10)?"0":"") + this.getDate() + (((this.getMonth()+1) < 10)?"0":"") + (this.getMonth()+1) + this.getFullYear();
+}
+
+var downloadReport = function(t,filename) {
+  var txt = '';
+  rows = $('ul.console > li');
+  rows.each(function (i, e) {
+    txt += $(e)[0].childNodes[0].data + '\n';
+  });
+  var txtData = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+
+  $(t).attr({
+      'download': filename,
+          'href': txtData,
+          'target': '_blank'
+  });
+}
+
 function init (ip) {
   socket = window.io(ip);
 
@@ -106,7 +125,7 @@ function init (ip) {
       $('a.plugin').click(function() {
         plugin = $(this).data('plugin');
         $.get('template/console.mst', function (template) {
-          var rendered = Mustache.render(template, {'name': plugin});
+          var rendered = Mustache.render(template, {'name': plugin, 'date': new Date().today()});
           $('#main-content').html(rendered);
           socket.emit('start_plugin', plugin);
           setHash('#plugin_' + plugin);
@@ -177,12 +196,12 @@ function init (ip) {
   socket.on('status', function (msg) {
     if (parseInt(msg) == 1) {
       $('#back').attr('disabled', true);
-      $('#download').attr('disabled', true);
+      $('#download').hide();
       $('#stop').attr('disabled', false);
       $('#command_text').attr('disabled', false);
     } else if (parseInt(msg) == 2) {
       $('#back').attr('disabled', false);
-      $('#download').attr('disabled', false);
+      $('#download').show();
       $('#stop').attr('disabled', true);
       $('#command_text').attr('disabled', true);
     }

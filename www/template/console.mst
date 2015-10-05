@@ -2,7 +2,7 @@
 	<h1>{{name}} is Running</h1>
 	<button class="btn btn-danger" id="stop">Stop</button>
 	<button class="btn btn-primary" id="back">Back</button>
-	<button class="btn btn-primary" id="download">Download the report</button>
+	<a class="btn btn-primary" onclick="downloadReport(this,'{{name}}_{{date}}_report.txt')" id="download">Download the report</a>
 </div>
 
 <div class="console">
