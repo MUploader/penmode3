@@ -25,6 +25,16 @@ and then start penmode3 with a simple
 $ penmode3
 ```
 
+## Download Penmode3 Plugins
+
+Penmode3 comes by default with no plugin. <br/>
+In various state (like Romania) is illegal to scan for open port in another Computer/Server. <br/>
+All the code/content in Penmode3 is totally legal. <br/>
+You can download verified plugin from the official repository if they are legal in your State based on it's legislation. <br/>
+
+[Penmode3-plugin Repo](http://github.com/TheZ3ro/penmode3-plugin)
+
+
 ## TODO
 
  * Write more Plugins
