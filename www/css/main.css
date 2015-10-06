@@ -87,7 +87,7 @@ div.render {
 }
 ul.console {
   min-width: 100px;
-  height: 300px;
+  height: 400px;
   list-style-type: none;
   padding: 20px 30px 0px 30px;
   overflow: auto;
