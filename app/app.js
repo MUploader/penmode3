@@ -43,35 +43,37 @@ Array.prototype.contains = function (data) {
 function setupLogin (cb) {
   var prompt = require('prompt');
   prompt.message = '>'.red;
-  prompt.start();
+  prompt.delimiter = ' ';
+  prompt.colors = false;
   console.log('Welcome to ' + 'Penmode3'.rainbow);
   console.log('You must add at least 1 user before starting Penmode3\n');
   var schema = {
     properties: {
       username: {
-        description: 'Enter your username',
+        description: 'Enter your username:',
         type: 'string',
         pattern: /^[a-zA-Z0-9\s\-]+$/,
         message: 'Name must be only letters, number, spaces, or dashes',
         required: true
       },
       password: {
-        description: 'Enter your password',
+        description: 'Enter your password:',
         type: 'string',
         required: true,
         hidden: true
       },
       repassword: {
-        description: 'Re-enter your password',
+        description: 'Confirm your password:',
         type: 'string',
         required: true,
         hidden: true
       }
     }
   };
+  prompt.start();
   prompt.get(schema, function (err, result) {
     if (err) {
-      return console.log(err);
+      return console.log(err.red);
     }
     if (result.password == result.repassword) {
       var user = {};
@@ -97,13 +99,18 @@ function setupLogin (cb) {
 
 // Load Plugins
 function loadPlugin() {
-  require('fs').readdirSync(argv.plugins || PLUGINPATH).forEach(function (file) {
-    if (file.match(/\.js$/) !== null && file !== 'main.js') {
-      var name = file.replace('.js', '');
-      plugins.push(name);
-    }
-  });
-  console.log('Plugins loaded: ' + plugins.join(', '));
+  try {
+    require('fs').readdirSync(argv.plugins || PLUGINPATH).forEach(function (file) {
+      if (file.match(/\.js$/) !== null && file !== 'main.js') {
+        var name = file.replace('.js', '');
+        plugins.push(name);
+      }
+    });
+    console.log('Plugins loaded: '.green + plugins.join(', '));
+  } catch (err) {
+    console.log(err.red);
+    process.exit();
+  }
 }
 
 function getTor (cb) {

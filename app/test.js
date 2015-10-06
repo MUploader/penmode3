@@ -23,3 +23,10 @@ var cpass = crypto.createHash('sha512').update("anacleto").digest('hex');
 console.assert(cpass === pass_hex);
 console.log(cpass === pass_hex);
 console.log(cpass);
+
+var socket_hex = 'f620c9e7efb416ca8027b91eec28ae19805be97678418ca38c60e8d9b0eee503e541bc08f1c12e1a1b00d356a407b1e1ea0348bb6523dda7d9029b72976bb990';
+var socketid = 'YfZlOmc_To2nKqfsAAAB';
+var sockid = crypto.createHmac('sha512', pass).update(socketid).digest('hex');
+console.assert(sockid === socket_hex);
+console.log(sockid === socket_hex);
+console.log(sockid);

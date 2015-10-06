@@ -38,7 +38,6 @@ You can download verified plugin from the official repository if they are legal 
 ## TODO
 
  * Write more Plugins
- * Download command output (export)
 
 
 ## Hacking/Improving penmode3
