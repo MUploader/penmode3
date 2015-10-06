@@ -49,14 +49,14 @@ function setupLogin (cb) {
   var schema = {
     properties: {
       username: {
-        //description: 'Enter your username',
+        description: 'Enter your username',
         type: 'string',
         pattern: /^[a-zA-Z0-9\s\-]+$/,
         message: 'Name must be only letters, number, spaces, or dashes',
         required: true
       },
       password: {
-        //description: 'Enter your password',
+        description: 'Enter your password',
         type: 'string',
         required: true,
         hidden: true
