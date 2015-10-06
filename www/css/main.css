@@ -78,6 +78,13 @@ div.console {
   border-radius: 10px;
   margin-top: 20px;
 }
+div.render {
+  background: rgba(205, 205, 205, 0.8) none repeat scroll 0% 0%;
+  color: #333;
+  border-radius: 10px;
+  margin-top: 20px;
+  display: none;
+}
 ul.console {
   min-width: 100px;
   height: 300px;

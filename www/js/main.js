@@ -158,6 +158,8 @@ function init (ip) {
   });
 
   socket.on('console', function (msg) {
+    $('div.render').hide();
+    $('div.console').show();
     var lines = msg.split('\n');
     for (var i = 0; i < lines.length; i++) {
       if(lines[i] != '') {
@@ -170,6 +172,13 @@ function init (ip) {
         $('ul.console').append(line);
       }
     }
+  });
+
+  socket.on('render', function (text) {
+    $('div.console').hide();
+    $('div.render').show();
+    var converter = new showdown.Converter();
+    $('div.render').html(converter.makeHtml(text));
   });
 
   socket.on('request_io', function (object) {

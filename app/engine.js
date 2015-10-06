@@ -1,5 +1,5 @@
 var events = require('events');
-var Convert = require('ansi-to-html');
+var Ansi2html = require('ansi-to-html');
 var EpicFail = require('./fail.js');
 
 var STATUS = {
@@ -13,7 +13,8 @@ function engine (socket, proc_n) {
   this.proc_n = proc_n;
   this.status = 0;
   this.interactive = true;
-  this.convert = new Convert();
+  this.markdown = false;
+  this.convert = new Ansi2html();
   events.EventEmitter.call(this);
 
   socket.on('command', function (msg) {
@@ -43,15 +44,24 @@ engine.prototype.isRunning = function () {
 
 engine.prototype.console = function (data, colors) {
   if (!this.isRunning()) { this.started(); }
-  if (typeof colors === 'undefined') {
-    colors = false;
+  if (!this.markdown) {
+    if (typeof colors === 'undefined') {
+      colors = false;
+    }
+    if (colors) {
+      data = this.convert.toHtml('' + data);
+    } else {
+      data = '' + data;
+    }
+    this.socket.emit('console', data);
   }
-  if (colors) {
-    data = this.convert.toHtml('' + data);
-  } else {
-    data = '' + data;
+};
+
+engine.prototype.render = function (data) {
+  if (!this.isRunning()) { this.started(); }
+  if (this.markdown) {
+    this.socket.emit('render', data);
   }
-  this.socket.emit('console', data);
 };
 
 engine.prototype.fail = function (msg) {
@@ -70,6 +80,10 @@ engine.prototype.request_io = function (object) {
 
 engine.prototype.setInteractive = function (bool) {
   this.interactive = bool;
+};
+
+engine.prototype.setMarkdown = function (bool) {
+  this.markdown = bool;
 };
 
 engine.prototype.started = function () {
