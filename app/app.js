@@ -82,7 +82,7 @@ function setupLogin (cb) {
       var obj = {};
       obj.login = [];
       obj.login.push(user);
-      var path = require('path').resolve(__dirname, './login2.json');
+      var path = require('path').resolve(__dirname, './login.json');
       require('fs').writeFile(path, JSON.stringify(obj), function (err) {
         if (err) {
           return console.log(err);
