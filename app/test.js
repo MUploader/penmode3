@@ -18,3 +18,8 @@ crypto.pbkdf2(pass, salt, 1000, 512/8, 'sha512', function (err, key) {
   console.assert(x === y, '\n' + x + '\n !== \n' + y);
   console.log(x === y);
 });
+
+var cpass = crypto.createHash('sha512').update("anacleto").digest('hex');
+console.assert(cpass === pass_hex);
+console.log(cpass === pass_hex);
+console.log(cpass);

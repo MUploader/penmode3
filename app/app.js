@@ -40,6 +40,42 @@ Array.prototype.contains = function (data) {
   return this.indexOf(data) > -1;
 };
 
+if (login.length == 1 && login[0].user == "toor") {
+  var prompt = require('prompt');
+  console.log("Welcome to " + "Penmode3".rainbow);
+  console.log("You must add at least 1 user before starting Penmode3\n");
+  prompt.start();
+  var schema = {
+    properties: {
+      username: {
+        description: 'Enter your username',
+        type: 'string',
+        pattern: /^[a-zA-Z0-9\s\-]+$/,
+        message: 'Name must be only letters, number, spaces, or dashes',
+        required: true
+      },
+      password: {
+        description: 'Enter your password',
+        type: 'string',
+        required: true,
+        hidden: true,
+      },
+      repassword: {
+        description: 'Re-enter your password',
+        type: 'string',
+        required: true,
+        hidden: true,
+      }
+    }
+  };
+  prompt.get(schema, function (err, result) {
+     if (result.password == result.repassword) {
+       var p = crypto.createHash('sha512').update(result.password).digest('hex');
+       // TODO
+     }
+   });
+}
+
 // Load Plugins
 require('fs').readdirSync(argv.plugins || PLUGINPATH).forEach(function (file) {
   if (file.match(/\.js$/) !== null && file !== 'main.js') {
