@@ -40,50 +40,71 @@ Array.prototype.contains = function (data) {
   return this.indexOf(data) > -1;
 };
 
-if (login.length == 1 && login[0].user == "toor") {
+function setupLogin (cb) {
   var prompt = require('prompt');
-  console.log("Welcome to " + "Penmode3".rainbow);
-  console.log("You must add at least 1 user before starting Penmode3\n");
+  prompt.message = '>'.red;
   prompt.start();
+  console.log('Welcome to ' + 'Penmode3'.rainbow);
+  console.log('You must add at least 1 user before starting Penmode3\n');
   var schema = {
     properties: {
       username: {
-        description: 'Enter your username',
+        //description: 'Enter your username',
         type: 'string',
         pattern: /^[a-zA-Z0-9\s\-]+$/,
         message: 'Name must be only letters, number, spaces, or dashes',
         required: true
       },
       password: {
-        description: 'Enter your password',
+        //description: 'Enter your password',
         type: 'string',
         required: true,
-        hidden: true,
+        hidden: true
       },
       repassword: {
         description: 'Re-enter your password',
         type: 'string',
         required: true,
-        hidden: true,
+        hidden: true
       }
     }
   };
   prompt.get(schema, function (err, result) {
-     if (result.password == result.repassword) {
-       var p = crypto.createHash('sha512').update(result.password).digest('hex');
-       // TODO
-     }
-   });
+    if (err) {
+      return console.log(err);
+    }
+    if (result.password == result.repassword) {
+      var user = {};
+      user.user = result.username;
+      user.pass_sha512 = crypto.createHash('sha512').update(result.password).digest('hex');
+      var obj = {};
+      obj.login = [];
+      obj.login.push(user);
+      var path = require('path').resolve(__dirname, './login2.json');
+      require('fs').writeFile(path, JSON.stringify(obj), function (err) {
+        if (err) {
+          return console.log(err);
+        }
+        console.log('User successfully added!'.green);
+        login = require('./login.json').login;
+        return cb();
+      });
+    } else {
+      console.log("Passwords don't match!");
+    }
+  });
 }
 
 // Load Plugins
-require('fs').readdirSync(argv.plugins || PLUGINPATH).forEach(function (file) {
-  if (file.match(/\.js$/) !== null && file !== 'main.js') {
-    var name = file.replace('.js', '');
-    plugins.push(name);
-  }
-});
-console.log('Plugins loaded: ' + plugins.join(', '));
+function loadPlugin() {
+  require('fs').readdirSync(argv.plugins || PLUGINPATH).forEach(function (file) {
+    if (file.match(/\.js$/) !== null && file !== 'main.js') {
+      var name = file.replace('.js', '');
+      plugins.push(name);
+    }
+  });
+  console.log('Plugins loaded: ' + plugins.join(', '));
+}
 
 function getTor (cb) {
   request.get({
@@ -222,17 +243,29 @@ io.on('connection', function (socket) {
   });
 });
 
-var msg = '';
-if (!argv.noserve) {
-  // ExpressStatic file server
-  app.use(express.static(argv.www || WEBPATH));
-  // Server + Socket.io
-  server.listen(argv.port || PORT);
-  msg = '[express+socket.io]';
-} else {
-  io.listen(argv.port || PORT);
-  msg = '[socket.io]';
+function start() {
+  var msg = '';
+  if (!argv.noserve) {
+    // ExpressStatic file server
+    app.use(express.static(argv.www || WEBPATH));
+    // Server + Socket.io
+    server.listen(argv.port || PORT);
+    msg = '[express+socket.io]';
+  } else {
+    io.listen(argv.port || PORT);
+    msg = '[socket.io]';
+  }
+  console.log('Penmode3'.green +
+    ' ' + msg + ' listening on port ' + (argv.port || PORT) +
+    ' from ' + (argv.www || WEBPATH));
 }
-console.log('Penmode3'.green +
-  ' ' + msg + ' listening on port ' + (argv.port || PORT) +
-  ' from ' + (argv.www || WEBPATH));
+
+if (login.length == 1 && login[0].user == 'toor') {
+  setupLogin(function () {
+    loadPlugin();
+    start();
+  })
+} else {
+  loadPlugin();
+  start();
+}
