@@ -13,6 +13,10 @@ TheZero, ex-PH#0S Team Member
 
 ## Installation
 
+#### From NPM
+`npm install penmode3`
+
+#### From git
 ```
 $ cd /opt
 $ git clone https://github.com/TheZ3ro/penmode3
