@@ -88,7 +88,7 @@ function setupLogin (cb) {
           return console.log(err);
         }
         console.log('User successfully added!'.green);
-        login = require('./login.json').login;
+        login = obj.login;
         return cb();
       });
     } else {
