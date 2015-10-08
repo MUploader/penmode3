@@ -169,7 +169,7 @@ io.on('connection', function (socket) {
         user = login[i];
       }
     }
-    if (user === undefined) {
+    if (user === null) {
       var fail = new Fail('login', 'user is undefined');
       socket.emit('fail', fail.stringify());
       return;

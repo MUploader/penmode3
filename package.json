@@ -3,6 +3,9 @@
   "description": "When pentest hits the 'clouds'",
   "author": "TheZero <io@thezero.org> (http://thezero.org/)",
   "version": "0.1.0",
+  "engines" : {
+    "node" : ">=0.12.7"
+  },
   "bin": {
     "penmode3": "./app/app.js"
   },
@@ -19,7 +22,7 @@
     "prompt": "~0.2.14"
   },
   "homepage": "http://thez3ro.github.io/penmode3",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "main": "app/app.js",
   "preferGlobal": true,
   "repository": {

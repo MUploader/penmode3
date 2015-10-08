@@ -43,7 +43,6 @@ function executeHash (lhash) {
 }
 
 function setHash (lhash) {
-  console.log(lhash);
   if (lhash === '') {
     window.location.hash = '';
     history.pushState('', document.title, window.location.pathname);
