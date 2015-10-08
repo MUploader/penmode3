@@ -42,6 +42,9 @@ You can download verified plugin from the official repository if they are legal 
 ## TODO
 
  * Write more Plugins
+ * Wiki: Guide on RaspberryPi/Droplet/VPS Installation
+ * Wiki: Guide on installing Plugin dependency
+ * Wiki: Guide on Setting a Tor proxy
 
 
 ## Hacking/Improving penmode3
