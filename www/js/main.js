@@ -81,7 +81,7 @@ var downloadReport = function(t,filename) {
   if ($('div.console').css('display') != 'none' ) {
     rows = $('ul.console > li');
     rows.each(function (i, e) {
-      txt += $(e)[0].childNodes[0].data + '\n';
+      txt += $(e).html().replace(/<.*?>/g, '') + '\n';
     });
     txtData = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
   } else {
