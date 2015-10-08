@@ -7,7 +7,6 @@ function getHash (lhash) {
         $('li.active').removeClass('active');
         $(this).parent().addClass('active');
     });
-    setHash('');
   } else {
     if (lhash.split('_')[0] === '#plugin') { return; }
     var hash = lhash.replace(/\#/g, '');
