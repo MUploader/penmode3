@@ -171,7 +171,7 @@ io.on('connection', function (socket) {
     }
     if (user === undefined) {
       var fail = new Fail('login', 'user is undefined');
-      Socket.emit('fail', fail.stringify());
+      socket.emit('fail', fail.stringify());
       return;
     }
     var pass = new Buffer(user.pass_sha512, 'hex');
