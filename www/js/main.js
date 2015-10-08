@@ -76,11 +76,18 @@ Date.prototype.today = function () {
 
 var downloadReport = function(t,filename) {
   var txt = '';
-  rows = $('ul.console > li');
-  rows.each(function (i, e) {
-    txt += $(e)[0].childNodes[0].data + '\n';
-  });
-  var txtData = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+  var txtData = '';
+
+  if ($('div.console').css('display') != 'none' ) {
+    rows = $('ul.console > li');
+    rows.each(function (i, e) {
+      txt += $(e)[0].childNodes[0].data + '\n';
+    });
+    txtData = 'data:text/plain;charset=utf-8,' + encodeURIComponent(txt);
+  } else {
+    filename = filename.replace(/.txt/g, '.html');
+    txtData = 'data:text/html;charset=utf-8,' + $('div.render').html();
+  }
 
   $(t).attr({
       'download': filename,
@@ -229,7 +236,8 @@ function init (ip) {
 if (typeof io !== 'undefined') {
   var socket = null;
   var plugin = null;
-  init('http://localhost:13370');
+  var server_ip = window.location.origin;
+  init(server_ip);
 } else {
   alert('Socket.io Server not found! \nHave you changed the port?');
 }

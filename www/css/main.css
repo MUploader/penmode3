@@ -79,11 +79,12 @@ div.console {
   margin-top: 20px;
 }
 div.render {
-  background: rgba(205, 205, 205, 0.8) none repeat scroll 0% 0%;
+  background: rgba(245, 245, 245, 1.0) none repeat scroll 0% 0%;
   color: #333;
   border-radius: 10px;
   margin-top: 20px;
   display: none;
+  padding: 10px 20px;
 }
 ul.console {
   min-width: 100px;
