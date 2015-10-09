@@ -2,10 +2,10 @@
 When pentest hits the "cloud"
 
 ### You can't use the name "penmode" in your project!!
-Why? It's your trademark? I don't think so.
+Why? Is it your trademark? I don't think so.
 
-I've started develop penmode since its first line.<br/>
-The Team split up, but I think that continue the project with its true name is not a shame.
+I've started to develop penmode since its first line.<br/>
+The Team split up, but I think that continuing the project with its true name is not a shame.
 
 Thanks.
 
@@ -31,8 +31,8 @@ $ penmode3
 
 ## Download Penmode3 Plugins
 
-Penmode3 comes by default with no plugin. <br/>
-In various state (like Romania) is illegal to scan for open port in another Computer/Server. <br/>
+Penmode3 comes by default with no plugins. <br/>
+In various states (like Romania) is illegal to scan for open ports in another Computer/Server. <br/>
 All the code/content in Penmode3 is totally legal. <br/>
 You can download verified plugin from the official repository if they are legal in your State based on it's legislation. <br/>
 
