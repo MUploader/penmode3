@@ -181,7 +181,9 @@ io.on('connection', function (socket) {
       }
       jwt.verify(webauth.token, key.toString('hex'), function (err, decoded) {
         if (err) {
-          throw err;
+          var fail = new Fail('login', err.message);
+          socket.emit('fail', fail.stringify());
+          return;
         }
         if (decoded.user === user.user && decoded.socket == socket.id) {
           console.log(socket.id);
