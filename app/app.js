@@ -52,7 +52,7 @@ function setupLogin (cb) {
       username: {
         description: 'Enter your username:',
         type: 'string',
-        pattern: /^[a-zA-Z0-9\s\-]+$/,
+        pattern: /^[a-zA-Z0-9\_\-]+$/,
         message: 'Name must be only letters, number, spaces, or dashes',
         required: true
       },

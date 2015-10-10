@@ -21,7 +21,7 @@ function engine (socket, proc_n) {
     if (self.interactive) {
       // String, Int or File. I hope no Plugin will let execute command directly
       // `shutdown -r now`
-      if (/^[a-zA-Z0-9\s\-\.\_]+$/.exec(msg) != null){
+      if (/^[a-zA-Z0-9\s\-\.\_]+$/.exec(msg) != null) {
         self.emit('command', msg);
       } else {
         self.fail('Command contains illegal character!');
