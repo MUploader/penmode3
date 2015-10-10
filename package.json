@@ -2,7 +2,7 @@
   "name": "penmode3",
   "description": "When pentest hits the 'clouds'",
   "author": "TheZero <io@thezero.org> (http://thezero.org/)",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "engines": {
     "node": ">=0.12.7"
   },
