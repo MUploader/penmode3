@@ -269,12 +269,23 @@ function start() {
     ' from ' + (argv.www || WEBPATH));
 }
 
-if (login.length == 1 && login[0].user == 'toor') {
-  setupLogin(function () {
-    loadPlugin();
-    start();
-  })
-} else {
+function init () {
   loadPlugin();
   start();
+  latestVersion('penmode3').then(version => {
+    if(version > VERSION) { // JAVASCRIPT POWERRRRRRRRR
+      console.log('There is a newer penmode3 version! Type "npm update penmode3 -g" in a terminal!'.yellow);
+    }
+  });
+}
+
+var VERSION = require('../package.json').version;
+var latestVersion = require('latest-version');
+
+if (login.length == 1 && login[0].user == 'toor') {
+  setupLogin(function () {
+    init();
+  });
+} else {
+  init();
 }

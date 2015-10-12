@@ -38,14 +38,10 @@ You can download verified plugin from the official repository if they are legal 
 
 [Penmode3-plugin Repo](http://github.com/TheZ3ro/penmode3-plugin)
 
-
-## TODO
-
- * Write more Plugins
- * Wiki: Guide on RaspberryPi/Droplet/VPS Installation
- * Wiki: Guide on installing Plugin dependency
- * Wiki: Guide on Setting a Tor proxy
-
+## A Note on Tor Status
+The Tor Status refer only on the port 80!<br/>
+Some plugins use other ports, if you want use Tor make sure you are proxying all the port!<br/>
+For that you can use this [iptables script](https://github.com/Pinperepette/Penmode2/blob/master/.moduli/anonimato.sh)
 
 ## Hacking/Improving penmode3
 If you are interested in Improving penmode3, or you only want to have
@@ -53,6 +49,18 @@ some more information on how it works, read the [wiki](https://github.com/TheZ3r
 
 **Send some Issue and/or Pull Request!**
 Read the wiki page on [Contribute](https://github.com/TheZ3ro/penmode3/wiki/Contribute)
+
+## Web Service Used
+
+ * [Tor Check](https://check.torproject.org/)
+ * [IPInfo.io](http://ipinfo.io/)
+
+## TODO
+
+* Write more Plugins
+* Wiki: Guide on RaspberryPi/Droplet/VPS Installation
+* Wiki: Guide on installing Plugin dependency
+* Wiki: Guide on Setting a Tor proxy
 
 ### Note
 I'm a *Pirate* and *Anacleto* is my personal parrot.
