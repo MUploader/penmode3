@@ -14,7 +14,9 @@ TheZero, ex-PH#0S Team Member
 ## Installation
 
 #### From NPM
-`npm install penmode3`
+`npm install -g penmode3`
+
+if yuo use ubuntu or debian must be use `sudo` intead of `npm install -g`
 
 #### From git
 ```
