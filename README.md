@@ -43,7 +43,7 @@ You can download verified plugin from the official repository if they are legal 
 ## A Note on Tor Status
 The Tor Status refer only on the port 80!<br/>
 Some plugins use other ports, if you want use Tor make sure you are proxying all the ports!<br/>
-For that you can use this [iptables script](https://github.com/ParrotSec/anonsurf/blob/master/anonsurf.sh)
+For that you can use the **"tor_tunnel.sh"** script in this repo :eyes:
 
 ## Hacking/Improving penmode3
 If you are interested in Improving penmode3, or you only want to have
