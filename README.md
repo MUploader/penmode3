@@ -63,6 +63,7 @@ Read the wiki page on [Contribute](https://github.com/TheZ3ro/penmode3/wiki/Cont
 * Wiki: Guide on RaspberryPi/Droplet/VPS Installation
 * Wiki: Guide on installing Plugin dependency
 * Wiki: Guide on Setting a Tor proxy
+* Add a description
 
 ### Note
 I'm a *Pirate* and *Anacleto* is my personal parrot.
