@@ -277,7 +277,7 @@ function init () {
       console.log('There is a newer penmode3 version! Type "npm update penmode3 -g" in a terminal!'.yellow);
     }
   });
-}
+};
 
 var VERSION = require('../package.json').version;
 var latestVersion = require('latest-version');
