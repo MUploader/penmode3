@@ -251,3 +251,5 @@ $(window).bind('beforeunload', function () {
 if (window.location.hash !== '') {
   getHash(window.location.hash);
 }
+
+// TODO: submit on enter
