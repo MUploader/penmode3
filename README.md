@@ -2,7 +2,11 @@
 When pentest hits the "cloud"
 
 ## What is Penmode?
-Penmode is...
+Penmode was designed to make everyone's favourite pentest tools portable and compliant with every os you might like to use.
+
+It has been wrote in node.js and runs through a web browser interface to let all tasks be more easy also if you want to run it on a phone.
+
+All plugins are customizable and every user can write his own tool set adding new features easily.
 
 ### You can't use the name "penmode" in your project!!
 Why? Is it your trademark? I don't think so.
