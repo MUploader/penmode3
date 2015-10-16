@@ -27,7 +27,10 @@ var plugins = [];
 var proc_n = null;
 
 var jwt = require('./jwt.js');
-var login = require('./login.json').login;
+var login = undefined;
+try {
+  login = require('./login.json').login;
+} catch (e) {}
 var Engine = require('./engine.js');
 var Fail = require('./fail.js');
 var auth = [];
@@ -272,7 +275,7 @@ function start() {
 function init () {
   loadPlugin();
   start();
-  latestVersion('penmode3').then(version => {
+  latestVersion('penmode3').then(function (version) {
     if(version > VERSION) { // JAVASCRIPT POWERRRRRRRRR
       console.log('There is a newer penmode3 version! Type "npm update penmode3 -g" in a terminal!'.yellow);
     }
@@ -282,7 +285,11 @@ function init () {
 var VERSION = require('../package.json').version;
 var latestVersion = require('latest-version');
 
-if (login.length == 1 && login[0].user == 'toor') {
+if (typeof login == 'undefined'){
+  setupLogin(function () {
+    init();
+  });
+} else if (login.length == 1 && login[0].user == 'toor') {
   setupLogin(function () {
     init();
   });
